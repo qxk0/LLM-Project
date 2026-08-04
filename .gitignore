@@ -1,0 +1,17 @@
+# 虚拟环境
+.venv/
+
+# 下载缓存(模型、数据集、pip 缓存)
+.cache/
+
+# 生成的数据与模型产物(体积大,不提交)
+data/
+models/
+
+# Python
+__pycache__/
+*.pyc
+
+# 其他
+.DS_Store
+Thumbs.db

@@ -1,0 +1,10 @@
+# HuggingFace 工具链(已在 .venv 中装好)
+# PyTorch 2.5.1+cu121 是从官方 CUDA 索引单独安装的,见 README
+transformers
+datasets
+accelerate
+peft
+trl
+bitsandbytes
+sentencepiece
+tiktoken
