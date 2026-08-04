@@ -20,7 +20,6 @@ import os
 import numpy as np
 from datasets import load_dataset
 from tokenizers import ByteLevelBPETokenizer
-from tokenizers.trainers import BpeTrainer
 
 from config import PretrainConfig
 
@@ -54,12 +53,13 @@ def main():
     # 2. 训练 BPE tokenizer
     print(f"用前 {cfg.tokenizer_sample} 篇故事训练 BPE tokenizer(词表 {cfg.vocab_size})...")
     tokenizer = ByteLevelBPETokenizer()
-    trainer = BpeTrainer(
+    # 新版 tokenizers(0.22+)直接在 train_from_iterator 里传训练参数
+    tokenizer.train_from_iterator(
+        texts[: cfg.tokenizer_sample],
         vocab_size=cfg.vocab_size,
         min_frequency=cfg.min_frequency,
         special_tokens=["<|endoftext|>"],  # 故事结束符,训练/生成时用来隔开故事
     )
-    tokenizer.train_from_iterator(texts[: cfg.tokenizer_sample], trainer=trainer)
 
     tokenizer_path = os.path.join(cfg.out_dir, "tokenizer.json")
     tokenizer.save(tokenizer_path)
