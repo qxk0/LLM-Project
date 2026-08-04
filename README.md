@@ -40,7 +40,12 @@ python pretrain/sample.py --prompt "Once upon a time,"   # 生成故事
 
 ### 第 2 天:Qwen2.5-0.5B LoRA 监督微调(SFT)
 
-(代码待编写)
+学什么:4bit 量化、LoRA 原理、指令数据格式(chat template)、效果对比。
+
+```powershell
+python sft/train_sft.py              # 下载 Qwen2.5-0.5B + 中文指令数据,LoRA 微调
+python sft/infer_sft.py --compare    # 基座 vs 微调后对比,生成 comparison.md
+```
 
 ### 第 3 天:GRPO 强化学习对齐(RL)
 
