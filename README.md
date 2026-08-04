@@ -38,6 +38,28 @@ python pretrain/sample.py --prompt "Once upon a time,"   # 生成故事
 常用参数:`--max-steps` 控制训练步数(先跑 `--max-steps 300` 验证流程),
 `--vocab-size` 控制词表大小,`--resume` 从检查点继续。
 
+**研究实验(重点,面试加分项):**
+
+```powershell
+# 结构消融:RoPE vs 学习式位置编码
+python pretrain/train.py --max-steps 2000 --pos-encoding rope --out-dir models/exp_rope
+python pretrain/train.py --max-steps 2000 --pos-encoding learned --out-dir models/exp_learned
+
+# 注意力消融:GQA(一半 KV 头)vs MHA
+python pretrain/train.py --max-steps 2000 --attention-type gqa --out-dir models/exp_gqa
+
+# 缩放实验:不同参数量的模型,画"参数量 vs loss"
+python pretrain/train.py --max-steps 2000 --n-layer 2 --n-embd 128 --n-head 2 --out-dir models/exp_1m
+python pretrain/train.py --max-steps 2000 --n-layer 4 --n-embd 256 --n-head 4 --out-dir models/exp_5m
+
+# 画图对比
+python pretrain/plot_results.py --log models/exp_rope/log.jsonl --log models/exp_learned/log.jsonl
+python pretrain/plot_results.py --scaling
+
+# 生成质量评估(多样性指标)
+python pretrain/eval_gen.py --ckpt models/pretrain/best.pt
+```
+
 ### 第 2 天:Qwen2.5-0.5B LoRA 监督微调(SFT)
 
 学什么:4bit 量化、LoRA 原理、指令数据格式(chat template)、效果对比。

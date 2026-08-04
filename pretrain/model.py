@@ -24,6 +24,10 @@ class GPTConfig:
     n_head: int = 6
     n_embd: int = 384
     dropout: float = 0.1
+    pos_encoding: str = "learned"     # learned | rope | alibi
+    attention_type: str = "mha"       # mha | mqa | gqa
+    num_kv_heads: int = 0             # GQA 的 KV 头数,0=自动取一半
+    tie_embeddings: bool = True       # 输入/输出词嵌入是否共享
 
 
 class LayerNorm(nn.Module):
@@ -37,7 +41,9 @@ class LayerNorm(nn.Module):
 
 
 class CausalSelfAttention(nn.Module):
-    """因果自注意力:每个位置只能看到自己和前面的 token。"""
+    """因果自注意力,支持 MHA / MQA / GQA 三种头配置,
+    以及 RoPE / ALiBi / 学习式三种位置编码(消融实验用)。
+    """
 
     def __init__(self, config: GPTConfig):
         super().__init__()
@@ -45,9 +51,22 @@ class CausalSelfAttention(nn.Module):
         self.n_head = config.n_head
         self.n_embd = config.n_embd
         self.head_dim = config.n_embd // config.n_head
+        self.pos_encoding = config.pos_encoding
 
-        # 一次线性变换同时算出 Q、K、V(合并在大矩阵里,计算更高效)
-        self.c_attn = nn.Linear(config.n_embd, 3 * config.n_embd, bias=False)
+        # KV 头数:MHA=全部头,MQA=1,GQA=一半(或手动指定)
+        if config.attention_type == "mqa":
+            self.n_kv_heads = 1
+        elif config.attention_type == "gqa":
+            self.n_kv_heads = config.num_kv_heads or max(1, config.n_head // 2)
+        else:
+            self.n_kv_heads = config.n_head
+        assert config.n_head % self.n_kv_heads == 0
+        self.n_rep = config.n_head // self.n_kv_heads
+
+        # QKV 一次算出;MQA/GQA 时 K、V 的头数更少,省显存省计算
+        self.c_attn = nn.Linear(
+            config.n_embd, (config.n_head + 2 * self.n_kv_heads) * self.head_dim, bias=False
+        )
         self.c_proj = nn.Linear(config.n_embd, config.n_embd, bias=False)
         self.attn_dropout = nn.Dropout(config.dropout)
         self.resid_dropout = nn.Dropout(config.dropout)
@@ -58,21 +77,65 @@ class CausalSelfAttention(nn.Module):
         )
         self.register_buffer("bias", mask)
 
+        # RoPE:预计算每个位置的 cos/sin(旋转角度)
+        if config.pos_encoding == "rope":
+            inv_freq = 1.0 / (
+                10000.0 ** (torch.arange(0, self.head_dim, 2).float() / self.head_dim)
+            )
+            t = torch.arange(config.block_size).float()
+            freqs = torch.outer(t, inv_freq)
+            emb = torch.cat((freqs, freqs), dim=-1)  # (T, head_dim)
+            self.register_buffer("cos", emb.cos())
+            self.register_buffer("sin", emb.sin())
+        # ALiBi:每个注意力头一个固定斜率,位置越远惩罚越大
+        elif config.pos_encoding == "alibi":
+            slopes = torch.tensor(
+                [2.0 ** (-8 * (i + 1) / self.n_head) for i in range(self.n_head)]
+            )
+            dist = torch.arange(config.block_size).view(1, 1, config.block_size, 1) - (
+                torch.arange(config.block_size).view(1, 1, 1, config.block_size)
+            )
+            self.register_buffer("alibi_bias", -slopes.view(1, self.n_head, 1, 1) * dist)
+
     def forward(self, x):
         B, T, C = x.size()
-        q, k, v = self.c_attn(x).split(self.n_embd, dim=2)
+        qkv = self.c_attn(x)
+        q = qkv[:, :, : self.n_head * self.head_dim]
+        k = qkv[
+            :, :, self.n_head * self.head_dim : (self.n_head + self.n_kv_heads) * self.head_dim
+        ]
+        v = qkv[:, :, (self.n_head + self.n_kv_heads) * self.head_dim :]
         q = q.view(B, T, self.n_head, self.head_dim).transpose(1, 2)
-        k = k.view(B, T, self.n_head, self.head_dim).transpose(1, 2)
-        v = v.view(B, T, self.n_head, self.head_dim).transpose(1, 2)
+        k = k.view(B, T, self.n_kv_heads, self.head_dim).transpose(1, 2)
+        v = v.view(B, T, self.n_kv_heads, self.head_dim).transpose(1, 2)
 
-        # 缩放点积注意力
+        # 旋转位置编码只作用于 Q、K,不影响 V
+        if self.pos_encoding == "rope":
+            q = self._apply_rope(q, self.cos[:T], self.sin[:T])
+            k = self._apply_rope(k, self.cos[:T], self.sin[:T])
+
+        # GQA/MQA:把 KV 头复制成和 Q 一样多
+        if self.n_rep > 1:
+            k = k.repeat_interleave(self.n_rep, dim=1)
+            v = v.repeat_interleave(self.n_rep, dim=1)
+
         att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(self.head_dim))
+        if self.pos_encoding == "alibi":
+            att = att + self.alibi_bias[:, :, :T, :T]
         att = att.masked_fill(self.bias[:, :, :T, :T] == 0, float("-inf"))
         att = F.softmax(att, dim=-1)
         att = self.attn_dropout(att)
         y = att @ v
         y = y.transpose(1, 2).contiguous().view(B, T, C)
         return self.resid_dropout(self.c_proj(y))
+
+    @staticmethod
+    def _apply_rope(x, cos, sin):
+        """RoPE:把相邻两个分量看成一个复数对,旋转 theta 角。"""
+        x1 = x[..., : x.shape[-1] // 2]
+        x2 = x[..., x.shape[-1] // 2 :]
+        rotated = torch.cat((-x2, x1), dim=-1)
+        return x * cos + rotated * sin
 
 
 class MLP(nn.Module):
@@ -110,14 +173,19 @@ class GPT(nn.Module):
         super().__init__()
         self.config = config
         self.token_embedding = nn.Embedding(config.vocab_size, config.n_embd)
-        self.position_embedding = nn.Embedding(config.block_size, config.n_embd)
+        # 学习式位置编码才需要位置表;RoPE/ALiBi 不需要
+        if config.pos_encoding == "learned":
+            self.position_embedding = nn.Embedding(config.block_size, config.n_embd)
+        else:
+            self.position_embedding = None
         self.drop = nn.Dropout(config.dropout)
         self.blocks = nn.ModuleList([Block(config) for _ in range(config.n_layer)])
         self.ln_f = LayerNorm(config.n_embd)
 
-        # 输出头与输入 embedding 共享权重:参数减半,训练更稳
+        # 输出头;tie_embeddings=True 时与输入 embedding 共享权重(参数减半、训练更稳)
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
-        self.lm_head.weight = self.token_embedding.weight
+        if config.tie_embeddings:
+            self.lm_head.weight = self.token_embedding.weight
 
         self.apply(self._init_weights)
 
@@ -129,9 +197,11 @@ class GPT(nn.Module):
         B, T = idx.size()
         assert T <= self.config.block_size, "输入长度超过 block_size"
 
-        tok = self.token_embedding(idx)
-        pos = self.position_embedding(torch.arange(T, device=idx.device))
-        x = self.drop(tok + pos)
+        x = self.token_embedding(idx)
+        if self.position_embedding is not None:
+            pos = self.position_embedding(torch.arange(T, device=idx.device))
+            x = x + pos
+        x = self.drop(x)
 
         for block in self.blocks:
             x = block(x)

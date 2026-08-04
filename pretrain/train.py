@@ -94,6 +94,13 @@ def main():
     parser.add_argument("--max-steps", type=int, default=None)
     parser.add_argument("--batch-size", type=int, default=None)
     parser.add_argument("--vocab-size", type=int, default=None)
+    parser.add_argument("--n-layer", type=int, default=None, help="模型层数(实验用)")
+    parser.add_argument("--n-head", type=int, default=None, help="注意力头数(实验用)")
+    parser.add_argument("--n-embd", type=int, default=None, help="隐藏维度(实验用)")
+    parser.add_argument("--pos-encoding", type=str, default=None, choices=["learned", "rope", "alibi"])
+    parser.add_argument("--attention-type", type=str, default=None, choices=["mha", "mqa", "gqa"])
+    parser.add_argument("--tie-embeddings", type=str, default=None, choices=["true", "false"])
+    parser.add_argument("--out-dir", type=str, default=None, help="实验输出目录")
     parser.add_argument("--resume", type=str, default=None, help="从检查点继续训练")
     args = parser.parse_args()
 
@@ -104,6 +111,20 @@ def main():
         cfg.batch_size = args.batch_size
     if args.vocab_size:
         cfg.vocab_size = args.vocab_size
+    if args.n_layer:
+        cfg.n_layer = args.n_layer
+    if args.n_head:
+        cfg.n_head = args.n_head
+    if args.n_embd:
+        cfg.n_embd = args.n_embd
+    if args.pos_encoding:
+        cfg.pos_encoding = args.pos_encoding
+    if args.attention_type:
+        cfg.attention_type = args.attention_type
+    if args.tie_embeddings:
+        cfg.tie_embeddings = args.tie_embeddings == "true"
+    if args.out_dir:
+        cfg.out_dir = args.out_dir
 
     torch.manual_seed(cfg.seed)
     np.random.seed(cfg.seed)
@@ -134,6 +155,10 @@ def main():
         n_head=cfg.n_head,
         n_embd=cfg.n_embd,
         dropout=cfg.dropout,
+        pos_encoding=cfg.pos_encoding,
+        attention_type=cfg.attention_type,
+        num_kv_heads=cfg.num_kv_heads,
+        tie_embeddings=cfg.tie_embeddings,
     )
     model = GPT(model_cfg).to(device)
     n_params = sum(p.numel() for p in model.parameters())
@@ -153,6 +178,21 @@ def main():
     use_amp = cfg.fp16 and device == "cuda"
 
     os.makedirs(cfg.out_dir, exist_ok=True)
+    # 实验日志:每行一个 JSON 事件,供绘图/分析脚本读取
+    log_path = os.path.join(cfg.out_dir, "log.jsonl")
+    log_file = open(log_path, "a", encoding="utf-8")
+
+    def log_event(event):
+        log_file.write(json.dumps(event, ensure_ascii=False) + "\n")
+        log_file.flush()
+
+    log_event(
+        {
+            "type": "meta",
+            "n_params": n_params,
+            "config": cfg.__dict__,
+        }
+    )
     best_val = float("inf")
 
     print(f"开始训练: {cfg.max_steps} 步,等效 batch = {cfg.batch_size * cfg.grad_accum} * {cfg.block_size} tokens")
@@ -191,9 +231,19 @@ def main():
 
         if step % cfg.log_interval == 0:
             dt = time.time() - t0
+            cur_loss = loss.item() * cfg.grad_accum
             print(
                 f"step {step:5d} | loss {loss.item() * cfg.grad_accum:.4f} | "
                 f"lr {lr:.2e} | {tokens_seen / dt / 1000:.0f}k tok/s"
+            )
+            log_event(
+                {
+                    "type": "train",
+                    "step": step,
+                    "loss": cur_loss,
+                    "lr": lr,
+                    "tok_per_s": tokens_seen / dt,
+                }
             )
 
         if step > 0 and step % cfg.eval_interval == 0:
@@ -204,6 +254,14 @@ def main():
                 model, data, eval_start, total_tokens, cfg.block_size, cfg.batch_size, device, cfg.eval_iters
             )
             print(f"  [eval] train_loss {train_loss:.4f} | val_loss {val_loss:.4f}")
+            log_event(
+                {
+                    "type": "eval",
+                    "step": step,
+                    "train_loss": train_loss,
+                    "val_loss": val_loss,
+                }
+            )
             if val_loss < best_val:
                 best_val = val_loss
                 save_checkpoint(
@@ -214,6 +272,7 @@ def main():
         if step > 0 and step % cfg.sample_interval == 0:
             text = generate_sample(model, tokenizer, device)
             print(f"  [sample] {text[:300]}")
+            log_event({"type": "sample", "step": step, "text": text})
 
         if step > 0 and step % cfg.save_interval == 0:
             ckpt_path = os.path.join(cfg.out_dir, f"ckpt_{step}.pt")
@@ -223,6 +282,7 @@ def main():
     # 结束时保存最终检查点
     final_path = os.path.join(cfg.out_dir, f"ckpt_{cfg.max_steps}.pt")
     save_checkpoint(final_path, model, optimizer, cfg.max_steps - 1, model_cfg)
+    log_file.close()
     print(f"训练完成!总用时 {(time.time() - t0) / 60:.1f} 分钟,最终检查点: {final_path}")
 
 

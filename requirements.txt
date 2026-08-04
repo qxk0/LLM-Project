@@ -8,3 +8,4 @@ trl
 bitsandbytes
 sentencepiece
 tiktoken
+matplotlib
