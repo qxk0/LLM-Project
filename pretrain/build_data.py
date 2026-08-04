@@ -1,5 +1,7 @@
 """训练 BPE tokenizer 并生成预训练数据文件。
 
+(文件名特意不叫 tokenize.py,避免与 Python 标准库的 tokenize 模块重名)
+
 做什么:
 1. 从 HuggingFace 下载 TinyStories 小故事数据集(首次运行自动下载,直连官方源)
 2. 用一部分故事训练一个字节级 BPE tokenizer(GPT-2 同款方案)

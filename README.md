@@ -29,7 +29,7 @@ models/     训练产物:tokenizer、检查点(不入库)
 
 ```powershell
 .\start.ps1
-python pretrain/tokenize.py      # 下载 TinyStories + 训练 BPE + 生成数据
+python pretrain/build_data.py    # 下载 TinyStories + 训练 BPE + 生成数据
 python pretrain/smoke_test.py    # 快速自检模型
 python pretrain/train.py         # 正式训练(约 1~2 小时)
 python pretrain/sample.py --prompt "Once upon a time,"   # 生成故事

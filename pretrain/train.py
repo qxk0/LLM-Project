@@ -114,7 +114,7 @@ def main():
     meta_path = os.path.join(cfg.data_dir, "meta.json")
     if not os.path.exists(meta_path):
         raise FileNotFoundError(
-            f"找不到 {meta_path},请先运行: python pretrain/tokenize.py"
+            f"找不到 {meta_path},请先运行: python pretrain/build_data.py"
         )
     with open(meta_path, encoding="utf-8") as f:
         meta = json.load(f)
