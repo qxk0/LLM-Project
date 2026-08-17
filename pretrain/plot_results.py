@@ -8,6 +8,7 @@
 import argparse
 import glob
 import json
+import os
 
 import matplotlib
 
@@ -33,7 +34,8 @@ def plot_curves(log_paths, out="models/pretrain/loss_curves.png"):
         losses = [e["loss"] for e in events if e["type"] == "train"]
         if not steps:
             continue
-        plt.plot(steps, losses, label=path.split("/")[-2], lw=1.5)
+        label = os.path.basename(os.path.dirname(path))
+        plt.plot(steps, losses, label=label, lw=1.5)
         val_steps = [e["step"] for e in events if e["type"] == "eval"]
         val_losses = [e["val_loss"] for e in events if e["type"] == "eval"]
         if val_steps:
@@ -65,7 +67,8 @@ def plot_scaling(log_paths, out="models/pretrain/scaling.png"):
     plt.figure(figsize=(8, 5))
     plt.plot([p[0] / 1e6 for p in points], [p[1] for p in points], "o-")
     for x, y, p in points:
-        plt.annotate(p.split("/")[-2], (x / 1e6, y), textcoords="offset points", xytext=(0, 8), fontsize=8)
+        label = os.path.basename(os.path.dirname(p))
+        plt.annotate(label, (x / 1e6, y), textcoords="offset points", xytext=(0, 8), fontsize=8)
     plt.xlabel("参数量 (M)")
     plt.ylabel("最终验证 loss")
     plt.title("缩放定律(小规模复现)")
