@@ -25,6 +25,28 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from trl import GRPOConfig, GRPOTrainer
 
 
+def load_tokenizer(model_name):
+    """优先读本地缓存,避免联网(训练时不需要网络)。"""
+    try:
+        return AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, local_files_only=True)
+    except Exception:
+        print("本地缓存未找到,尝试联网加载(网络受限时可设置 HF_ENDPOINT 镜像)...")
+        return AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+
+
+def load_model(model_name, bnb_config):
+    try:
+        return AutoModelForCausalLM.from_pretrained(
+            model_name, quantization_config=bnb_config, device_map="auto", trust_remote_code=True,
+            local_files_only=True,
+        )
+    except Exception:
+        print("本地缓存未找到,尝试联网加载...")
+        return AutoModelForCausalLM.from_pretrained(
+            model_name, quantization_config=bnb_config, device_map="auto", trust_remote_code=True
+        )
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="GRPO 强化学习(数学题对齐)")
     parser.add_argument("--model-name", type=str, default="Qwen/Qwen2.5-0.5B")
@@ -85,20 +107,18 @@ def main():
     print(f"生成 {len(dataset)} 道数学题(本地生成,无需下载)")
 
     # ---------- 2. 模型:SFT 微调后的 LoRA 继续 ----------
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
+    tokenizer = load_tokenizer(args.model_name)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.float16,
+        bnb_4bit_compute_dtype=torch.bfloat16,
         bnb_4bit_use_double_quant=True,
     )
     print(f"加载基座 {args.model_name} + SFT 适配器 {args.adapter} ...")
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model_name, quantization_config=bnb_config, device_map="auto", trust_remote_code=True
-    )
+    model = load_model(args.model_name, bnb_config)
     model = PeftModel.from_pretrained(model, args.adapter)
 
     # ---------- 3. GRPO 训练 ----------
@@ -111,7 +131,7 @@ def main():
         logging_steps=5,
         save_steps=50,
         save_total_limit=2,
-        fp16=True,
+        bf16=True,
         gradient_checkpointing=True,
         report_to="none",
         num_generations=args.num_generations,

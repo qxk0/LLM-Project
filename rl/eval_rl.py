@@ -44,9 +44,14 @@ def build_model(model_name, adapter):
         bnb_4bit_compute_dtype=torch.float16,
         bnb_4bit_use_double_quant=True,
     )
-    model = AutoModelForCausalLM.from_pretrained(
-        model_name, quantization_config=bnb_config, device_map="auto"
-    )
+    try:
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name, quantization_config=bnb_config, device_map="auto", local_files_only=True
+        )
+    except Exception:
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name, quantization_config=bnb_config, device_map="auto"
+        )
     return PeftModel.from_pretrained(model, adapter)
 
 
@@ -77,7 +82,12 @@ def evaluate(model, tokenizer, questions):
 
 def main():
     args = parse_args()
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(
+            args.model_name, trust_remote_code=True, local_files_only=True
+        )
+    except Exception:
+        tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
