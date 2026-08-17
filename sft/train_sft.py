@@ -131,7 +131,7 @@ def main():
         gradient_accumulation_steps=args.grad_accum,
         max_steps=args.max_steps,
         learning_rate=args.lr,
-        warmup_ratio=0.03,
+        warmup_steps=int(0.03 * args.max_steps),
         lr_scheduler_type="cosine",
         fp16=True,
         logging_steps=10,
@@ -145,7 +145,7 @@ def main():
         args=training_args,
         train_dataset=dataset,
         data_collator=DataCollatorForSeq2Seq(tokenizer=tokenizer, padding=True),
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
     )
 
     print(f"开始 SFT 训练: {args.max_steps} 步,等效 batch = {args.batch_size * args.grad_accum}")
