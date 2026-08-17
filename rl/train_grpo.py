@@ -1,0 +1,144 @@
+"""GRPO 强化学习对齐脚本(DeepSeek-R1 同款思路)。
+
+做什么:
+1. 从 SFT 微调后的模型继续(4bit 基座 + LoRA 适配器)
+2. 用 GRPO 做强化学习:模型先自己生成答案,再按"规则奖励"打分
+3. 奖励函数(纯规则,不依赖大模型):
+   - 正确率奖励:答案数字对不对(+1.0)
+   - 格式奖励:有没有写出"答案是 ..."(+0.5)
+   模型通过试错学会"把步骤写出来、答案写对",这就是对齐的核心思想。
+
+任务:两位数以内的加减法(数据本地生成,不用下载)。
+训练产物:models/rl/ 下保存 RL 训练后的 LoRA 适配器。
+"""
+
+import argparse
+import json
+import os
+import random
+import re
+
+import torch
+from datasets import Dataset
+from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from trl import GRPOConfig, GRPOTrainer
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="GRPO 强化学习(数学题对齐)")
+    parser.add_argument("--model-name", type=str, default="Qwen/Qwen2.5-0.5B")
+    parser.add_argument("--adapter", type=str, default="models/sft", help="SFT 微调好的适配器")
+    parser.add_argument("--num-samples", type=int, default=400, help="训练题数量")
+    parser.add_argument("--max-steps", type=int, default=200)
+    parser.add_argument("--batch-size", type=int, default=2)
+    parser.add_argument("--grad-accum", type=int, default=2)
+    parser.add_argument("--num-generations", type=int, default=4, help="每题生成几个候选答案")
+    parser.add_argument("--max-completion-length", type=int, default=128)
+    parser.add_argument("--lr", type=float, default=5e-5)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--output-dir", type=str, default="models/rl")
+    return parser.parse_args()
+
+
+def make_math_dataset(num_samples, seed):
+    """本地生成加减法题目:prompt 是问题,answer 是正确答案。"""
+    rng = random.Random(seed)
+    rows = []
+    for _ in range(num_samples):
+        a, b = rng.randint(1, 99), rng.randint(1, 99)
+        if rng.random() < 0.5:
+            prompt, answer = f"请计算:{a} + {b} = ?", str(a + b)
+        else:
+            a, b = max(a, b), min(a, b)  # 保证减法结果非负
+            prompt, answer = f"请计算:{a} - {b} = ?", str(a - b)
+        rows.append({"prompt": prompt + "\n请写出计算过程,并给出最终答案。", "answer": answer})
+    return Dataset.from_list(rows)
+
+
+def extract_last_number(text):
+    """从模型输出中提取最后一个整数,作为它给出的答案。"""
+    nums = re.findall(r"-?\d+", text)
+    return int(nums[-1]) if nums else None
+
+
+def correctness_reward(prompts, completions, answer, **kwargs):
+    """答案正确得 1 分。answer 来自数据集列,由 trainer 自动传入。"""
+    rewards = []
+    for comp, ans in zip(completions, answer):
+        pred = extract_last_number(comp)
+        rewards.append(1.0 if pred is not None and pred == int(ans) else 0.0)
+    return rewards
+
+
+def format_reward(prompts, completions, **kwargs):
+    """写出了"答案"字样得 0.5 分,鼓励模型把结论明确写出来。"""
+    return [0.5 if re.search(r"答案", c) else 0.0 for c in completions]
+
+
+def main():
+    args = parse_args()
+    os.makedirs(args.output_dir, exist_ok=True)
+
+    # ---------- 1. 数据 ----------
+    dataset = make_math_dataset(args.num_samples, args.seed)
+    print(f"生成 {len(dataset)} 道数学题(本地生成,无需下载)")
+
+    # ---------- 2. 模型:SFT 微调后的 LoRA 继续 ----------
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    bnb_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch.float16,
+        bnb_4bit_use_double_quant=True,
+    )
+    print(f"加载基座 {args.model_name} + SFT 适配器 {args.adapter} ...")
+    model = AutoModelForCausalLM.from_pretrained(
+        args.model_name, quantization_config=bnb_config, device_map="auto", trust_remote_code=True
+    )
+    model = PeftModel.from_pretrained(model, args.adapter)
+
+    # ---------- 3. GRPO 训练 ----------
+    training_args = GRPOConfig(
+        output_dir=args.output_dir,
+        max_steps=args.max_steps,
+        per_device_train_batch_size=args.batch_size,
+        gradient_accumulation_steps=args.grad_accum,
+        learning_rate=args.lr,
+        logging_steps=5,
+        save_steps=50,
+        save_total_limit=2,
+        fp16=True,
+        gradient_checkpointing=True,
+        report_to="none",
+        num_generations=args.num_generations,
+        max_completion_length=args.max_completion_length,
+        beta=0.04,  # KL 惩罚系数:约束 RL 后的模型别离 SFT 太远
+    )
+    trainer = GRPOTrainer(
+        model=model,
+        reward_funcs=[correctness_reward, format_reward],
+        args=training_args,
+        train_dataset=dataset,
+        processing_class=tokenizer,
+    )
+
+    print(f"开始 GRPO 训练:{args.max_steps} 步,每题生成 {args.num_generations} 个候选")
+    trainer.train()
+
+    # ---------- 4. 保存 ----------
+    # 删掉训练用的参考适配器,只保留 RL 更新后的 default 适配器
+    if "ref" in model.peft_config:
+        model.delete_adapter("ref")
+    model.save_pretrained(args.output_dir)
+    tokenizer.save_pretrained(args.output_dir)
+    with open(os.path.join(args.output_dir, "training_log.json"), "w", encoding="utf-8") as f:
+        json.dump(trainer.state.log_history, f, ensure_ascii=False, indent=2)
+    print(f"RL 训练完成!适配器已保存到 {args.output_dir}")
+
+
+if __name__ == "__main__":
+    main()

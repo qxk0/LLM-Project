@@ -71,7 +71,14 @@ python sft/infer_sft.py --compare    # 基座 vs 微调后对比,生成 comparis
 
 ### 第 3 天:GRPO 强化学习对齐(RL)
 
-(代码待编写)
+学什么:强化学习对齐的原理、GRPO 算法、规则奖励函数设计、前后对比。
+
+```powershell
+python rl/train_grpo.py              # 从 SFT 模型继续,GRPO 训练数学题对齐
+python rl/eval_rl.py                 # SFT vs RL 正确率对比,生成 rl_comparison.md
+```
+
+奖励设计:答案正确 +1.0,写出"答案是 ..."格式 +0.5,完全基于规则,不需要奖励模型。
 
 ## 简历写法(参考)
 
