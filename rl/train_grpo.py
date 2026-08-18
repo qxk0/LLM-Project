@@ -191,6 +191,9 @@ def main():
         train_dataset=dataset,
         processing_class=tokenizer,
     )
+    # TRL 创建 ref 参考适配器后,活动适配器会变成 "ref";
+    # 必须切回 "default",否则训练更新的是 ref,而保存时又会被删掉(等于白训)。
+    model.set_adapter("default")
 
     print(f"开始 GRPO 训练:{args.max_steps} 步,每题生成 {args.num_generations} 个候选")
     trainer.train()
