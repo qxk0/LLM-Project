@@ -107,7 +107,7 @@ def main():
         tokenizer.pad_token = tokenizer.eos_token
 
     results = []
-    configs = [("base", None)] if not args.adapters else []
+    configs = [("base", None)]
     configs += [(os.path.basename(a.rstrip("/\\")), a) for a in args.adapters]
 
     for name, adapter in configs:
