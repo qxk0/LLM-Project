@@ -30,10 +30,10 @@ def make_questions(num, seed):
     for _ in range(num):
         a, b = rng.randint(1, 99), rng.randint(1, 99)
         if rng.random() < 0.5:
-            qs.append((f"请计算:{a} + {b} = ?", str(a + b)))
+            qs.append((f"请计算:{a} + {b} = ?\n请给出最终答案。", str(a + b)))
         else:
             a, b = max(a, b), min(a, b)
-            qs.append((f"请计算:{a} - {b} = ?", str(a - b)))
+            qs.append((f"请计算:{a} - {b} = ?\n请给出最终答案。", str(a - b)))
     return qs
 
 

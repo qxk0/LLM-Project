@@ -52,12 +52,12 @@ def parse_args():
     parser.add_argument("--model-name", type=str, default="Qwen/Qwen2.5-0.5B")
     parser.add_argument("--adapter", type=str, default="models/sft", help="SFT 微调好的适配器")
     parser.add_argument("--num-samples", type=int, default=400, help="训练题数量")
-    parser.add_argument("--max-steps", type=int, default=200)
+    parser.add_argument("--max-steps", type=int, default=300)
     parser.add_argument("--batch-size", type=int, default=2)
-    parser.add_argument("--grad-accum", type=int, default=2)
+    parser.add_argument("--grad-accum", type=int, default=4, help="累积步数(与 batch 乘积需能被候选数整除)")
     parser.add_argument("--num-generations", type=int, default=4, help="每题生成几个候选答案")
-    parser.add_argument("--max-completion-length", type=int, default=128)
-    parser.add_argument("--lr", type=float, default=5e-5)
+    parser.add_argument("--max-completion-length", type=int, default=48, help="回答上限,短回答奖励信号更密集")
+    parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output-dir", type=str, default="models/rl")
     return parser.parse_args()
@@ -74,7 +74,7 @@ def make_math_dataset(num_samples, seed):
         else:
             a, b = max(a, b), min(a, b)  # 保证减法结果非负
             prompt, answer = f"请计算:{a} - {b} = ?", str(a - b)
-        rows.append({"prompt": prompt + "\n请写出计算过程,并给出最终答案。", "answer": answer})
+        rows.append({"prompt": prompt + "\n请给出最终答案。", "answer": answer})
     return Dataset.from_list(rows)
 
 
@@ -136,6 +136,7 @@ def main():
         report_to="none",
         num_generations=args.num_generations,
         max_completion_length=args.max_completion_length,
+        temperature=0.8,  # 降低采样噪声,让优势估计更稳
         beta=0.04,  # KL 惩罚系数:约束 RL 后的模型别离 SFT 太远
     )
     trainer = GRPOTrainer(
