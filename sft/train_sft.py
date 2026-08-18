@@ -33,6 +33,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Qwen2.5-0.5B LoRA 监督微调")
     parser.add_argument("--model-name", type=str, default="Qwen/Qwen2.5-0.5B")
     parser.add_argument("--dataset", type=str, default="shibing624/alpaca-zh")
+    parser.add_argument("--data-file", type=str, default=None,
+                        help="本地 JSONL 数据(数据管道产物),格式:{q,a,keywords,ood}")
     parser.add_argument("--max-examples", type=int, default=2000, help="取多少条训练样本")
     parser.add_argument("--max-steps", type=int, default=300, help="训练步数")
     parser.add_argument("--batch-size", type=int, default=1, help="每设备 batch(4GB 显存用 1)")
@@ -97,10 +99,24 @@ def main():
     model.print_trainable_parameters()
 
     # ---------- 4. 数据 ----------
-    print(f"正在加载数据集 {args.dataset} (首次运行会下载)...")
-    raw = load_dataset(args.dataset, split="train")
-    n = min(args.max_examples, len(raw))
-    data = raw.select(range(n)).map(format_example)
+    if args.data_file:
+        # 自建数据管道产物:领域客服数据,直接本地加载
+        print(f"正在加载本地数据 {args.data_file} ...")
+        raw = load_dataset("json", data_files=args.data_file, split="train")
+        n = min(args.max_examples, len(raw))
+        data = raw.select(range(n)).map(
+            lambda r: {
+                "messages": [
+                    {"role": "user", "content": r["q"]},
+                    {"role": "assistant", "content": r["a"]},
+                ]
+            }
+        )
+    else:
+        print(f"正在加载数据集 {args.dataset} (首次运行会下载)...")
+        raw = load_dataset(args.dataset, split="train")
+        n = min(args.max_examples, len(raw))
+        data = raw.select(range(n)).map(format_example)
     print(f"使用 {n} 条指令样本")
 
     def tokenize_fn(ex):

@@ -51,6 +51,10 @@ def parse_args():
     parser = argparse.ArgumentParser(description="GRPO 强化学习(数学题对齐)")
     parser.add_argument("--model-name", type=str, default="Qwen/Qwen2.5-0.5B")
     parser.add_argument("--adapter", type=str, default="models/sft", help="SFT 微调好的适配器")
+    parser.add_argument("--mode", type=str, default="domain", choices=["domain", "math"],
+                        help="domain=领域客服对齐(默认);math=数学题对齐")
+    parser.add_argument("--data-file", type=str, default="data_eng/output/train.jsonl",
+                        help="domain 模式的数据管道产物")
     parser.add_argument("--num-samples", type=int, default=400, help="训练题数量")
     parser.add_argument("--max-steps", type=int, default=300)
     parser.add_argument("--batch-size", type=int, default=2)
@@ -78,6 +82,24 @@ def make_math_dataset(num_samples, seed):
     return Dataset.from_list(rows)
 
 
+def make_domain_dataset(path):
+    """读取数据管道产物:领域问答 + 拒答样本,每个样本带答案关键词。"""
+    rows = []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                r = json.loads(line)
+                rows.append(
+                    {
+                        "prompt": r["q"],
+                        "answer_keywords": r["keywords"],
+                        "ood": r["ood"],
+                    }
+                )
+    return Dataset.from_list(rows)
+
+
 def extract_last_number(text):
     """从模型输出中提取最后一个整数,作为它给出的答案。"""
     nums = re.findall(r"-?\d+", text)
@@ -98,13 +120,34 @@ def format_reward(prompts, completions, **kwargs):
     return [0.5 if len(c.strip()) <= 40 else 0.0 for c in completions]
 
 
+def domain_reward(prompts, completions, answer_keywords, ood, **kwargs):
+    """领域客服对齐奖励:
+    知识库内问题 -> 回答包含答案关键实体得 1 分;
+    知识库外问题 -> 正确拒答(不瞎编)得 1 分。
+    """
+    rewards = []
+    for comp, kws, is_ood in zip(completions, answer_keywords, ood):
+        if is_ood:
+            refused = any(m in comp for m in ["抱歉", "不好意思", "无法回答", "超出", "服务范围", "咨询"])
+            rewards.append(1.0 if refused else 0.0)
+        else:
+            rewards.append(1.0 if any(k in comp for k in kws) else 0.0)
+    return rewards
+
+
 def main():
     args = parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
 
     # ---------- 1. 数据 ----------
-    dataset = make_math_dataset(args.num_samples, args.seed)
-    print(f"生成 {len(dataset)} 道数学题(本地生成,无需下载)")
+    if args.mode == "domain":
+        dataset = make_domain_dataset(args.data_file)
+        reward_funcs = [domain_reward, format_reward]
+        print(f"加载领域数据 {len(dataset)} 条(数据管道产物)")
+    else:
+        dataset = make_math_dataset(args.num_samples, args.seed)
+        reward_funcs = [correctness_reward, format_reward]
+        print(f"生成 {len(dataset)} 道数学题(本地生成,无需下载)")
 
     # ---------- 2. 模型:SFT 微调后的 LoRA 继续 ----------
     tokenizer = load_tokenizer(args.model_name)
@@ -143,7 +186,7 @@ def main():
     )
     trainer = GRPOTrainer(
         model=model,
-        reward_funcs=[correctness_reward, format_reward],
+        reward_funcs=reward_funcs,
         args=training_args,
         train_dataset=dataset,
         processing_class=tokenizer,

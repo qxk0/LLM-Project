@@ -1,0 +1,128 @@
+{"intent": "price", "q": "亲,你们家芋泥波波鲜奶多少钱?", "a": "芋泥波波鲜奶 17 元一杯。", "keywords": ["17"], "ood": false}
+{"intent": "price", "q": "麻烦问一下,加芋泥多少钱?", "a": "加芋泥加 3 元。", "keywords": ["3"], "ood": false}
+{"intent": "price", "q": "你好,柠檬气泡水怎么卖的?", "a": "柠檬气泡水 10 元一杯。", "keywords": ["10"], "ood": false}
+{"intent": "price", "q": "请问我想知道经典珍珠奶茶多少钱", "a": "经典珍珠奶茶 12 元一杯。", "keywords": ["12"], "ood": false}
+{"intent": "price", "q": "麻烦问一下,经典珍珠奶茶多少钱?", "a": "经典珍珠奶茶 12 元一杯。", "keywords": ["12"], "ood": false}
+{"intent": "price", "q": "你好,请问芝士奶盖四季春的价格是?", "a": "芝士奶盖四季春 16 元一杯。", "keywords": ["16"], "ood": false}
+{"intent": "price", "q": "请问请问茉莉绿茶的价格是?", "a": "茉莉绿茶 8 元一杯。", "keywords": ["8"], "ood": false}
+{"intent": "price", "q": "亲,杨枝甘露要多少钱?", "a": "杨枝甘露 18 元一杯。", "keywords": ["18"], "ood": false}
+{"intent": "price", "q": "你好,你们黑糖珍珠鲜奶卖多少钱?", "a": "黑糖珍珠鲜奶 15 元一杯。", "keywords": ["15"], "ood": false}
+{"intent": "price", "q": "亲,你们家杨枝甘露多少钱?", "a": "杨枝甘露 18 元一杯。", "keywords": ["18"], "ood": false}
+{"intent": "price", "q": "你好,加芋泥多少钱?", "a": "加芋泥加 3 元。", "keywords": ["3"], "ood": false}
+{"intent": "price", "q": "亲,柠檬气泡水怎么卖的?", "a": "柠檬气泡水 10 元一杯。", "keywords": ["10"], "ood": false}
+{"intent": "price", "q": "你好,你们家柠檬气泡水多少钱?", "a": "柠檬气泡水 10 元一杯。", "keywords": ["10"], "ood": false}
+{"intent": "price", "q": "请问一杯柠檬气泡水多少钱?", "a": "柠檬气泡水 10 元一杯。", "keywords": ["10"], "ood": false}
+{"intent": "price", "q": "请问请问黑糖珍珠鲜奶的价格是?", "a": "黑糖珍珠鲜奶 15 元一杯。", "keywords": ["15"], "ood": false}
+{"intent": "price", "q": "你好,一杯焦糖布丁奶茶多少钱?", "a": "焦糖布丁奶茶 14 元一杯。", "keywords": ["14"], "ood": false}
+{"intent": "price", "q": "麻烦问一下,你们最便宜的是什么?", "a": "茉莉绿茶最便宜,8 元一杯。", "keywords": ["茉莉绿茶", "8"], "ood": false}
+{"intent": "price", "q": "麻烦问一下,茉莉绿茶要多少钱?", "a": "茉莉绿茶 8 元一杯。", "keywords": ["8"], "ood": false}
+{"intent": "price", "q": "麻烦问一下,焦糖布丁奶茶多少钱一杯?", "a": "焦糖布丁奶茶 14 元一杯。", "keywords": ["14"], "ood": false}
+{"intent": "price", "q": "亲,黑糖珍珠鲜奶怎么卖的?", "a": "黑糖珍珠鲜奶 15 元一杯。", "keywords": ["15"], "ood": false}
+{"intent": "price", "q": "请问你们黑糖珍珠鲜奶卖多少钱?", "a": "黑糖珍珠鲜奶 15 元一杯。", "keywords": ["15"], "ood": false}
+{"intent": "price", "q": "你好,茉莉绿茶多少钱?", "a": "茉莉绿茶 8 元一杯。", "keywords": ["8"], "ood": false}
+{"intent": "price", "q": "芝士奶盖四季春贵不贵?", "a": "芝士奶盖四季春 16 元一杯。", "keywords": ["16"], "ood": false}
+{"intent": "price", "q": "请问芝士奶盖四季春贵不贵?", "a": "芝士奶盖四季春 16 元一杯。", "keywords": ["16"], "ood": false}
+{"intent": "price", "q": "请问杨枝甘露多少钱一杯?", "a": "杨枝甘露 18 元一杯。", "keywords": ["18"], "ood": false}
+{"intent": "price", "q": "你好,请问茉莉绿茶的价格是?", "a": "茉莉绿茶 8 元一杯。", "keywords": ["8"], "ood": false}
+{"intent": "price", "q": "亲,焦糖布丁奶茶呢?", "a": "焦糖布丁奶茶 14 元一杯。", "keywords": ["14"], "ood": false}
+{"intent": "price", "q": "亲,焦糖布丁奶茶怎么卖的?", "a": "焦糖布丁奶茶 14 元一杯。", "keywords": ["14"], "ood": false}
+{"intent": "price", "q": "请问加布丁多少钱?", "a": "加布丁加 3 元。", "keywords": ["3"], "ood": false}
+{"intent": "price", "q": "请问柠檬气泡水要多少钱?", "a": "柠檬气泡水 10 元一杯。", "keywords": ["10"], "ood": false}
+{"intent": "price", "q": "你好,你们家经典珍珠奶茶多少钱?", "a": "经典珍珠奶茶 12 元一杯。", "keywords": ["12"], "ood": false}
+{"intent": "price", "q": "你好,加椰果多少钱?", "a": "加椰果加 2 元。", "keywords": ["2"], "ood": false}
+{"intent": "price", "q": "请问你们经典珍珠奶茶卖多少钱?", "a": "经典珍珠奶茶 12 元一杯。", "keywords": ["12"], "ood": false}
+{"intent": "price", "q": "亲,你们黑糖珍珠鲜奶卖多少钱?", "a": "黑糖珍珠鲜奶 15 元一杯。", "keywords": ["15"], "ood": false}
+{"intent": "price", "q": "一杯黑糖珍珠鲜奶多少钱?", "a": "黑糖珍珠鲜奶 15 元一杯。", "keywords": ["15"], "ood": false}
+{"intent": "price", "q": "请问芝士奶盖四季春的价格是?", "a": "芝士奶盖四季春 16 元一杯。", "keywords": ["16"], "ood": false}
+{"intent": "price", "q": "亲,加椰果多少钱?", "a": "加椰果加 2 元。", "keywords": ["2"], "ood": false}
+{"intent": "price", "q": "你好,你们最便宜的是什么?", "a": "茉莉绿茶最便宜,8 元一杯。", "keywords": ["茉莉绿茶", "8"], "ood": false}
+{"intent": "price", "q": "你好,经典珍珠奶茶多少钱一杯?", "a": "经典珍珠奶茶 12 元一杯。", "keywords": ["12"], "ood": false}
+{"intent": "price", "q": "你好,一杯茉莉绿茶多少钱?", "a": "茉莉绿茶 8 元一杯。", "keywords": ["8"], "ood": false}
+{"intent": "recommend", "q": "你们家经典的好喝吗?", "a": "推荐经典珍珠奶茶,12 元一杯。", "keywords": ["经典珍珠奶茶"], "ood": false}
+{"intent": "recommend", "q": "想试试奶盖的,推荐哪个?", "a": "推荐芝士奶盖四季春,16 元一杯。", "keywords": ["芝士奶盖四季春"], "ood": false}
+{"intent": "recommend", "q": "推荐一下奶茶的饮品", "a": "推荐经典珍珠奶茶,12 元一杯。", "keywords": ["经典珍珠奶茶"], "ood": false}
+{"intent": "recommend", "q": "你好,有没有气泡水的好喝的?", "a": "推荐柠檬气泡水,10 元一杯。", "keywords": ["柠檬气泡水"], "ood": false}
+{"intent": "recommend", "q": "麻烦问一下,我想喝西柚的,有什么推荐?", "a": "推荐杨枝甘露,18 元一杯。", "keywords": ["杨枝甘露"], "ood": false}
+{"intent": "recommend", "q": "亲,你们家芝士的好喝吗?", "a": "推荐芝士奶盖四季春,16 元一杯。", "keywords": ["芝士奶盖四季春"], "ood": false}
+{"intent": "recommend", "q": "你好,你们家茉莉的好喝吗?", "a": "推荐茉莉绿茶,8 元一杯。", "keywords": ["茉莉绿茶"], "ood": false}
+{"intent": "recommend", "q": "麻烦问一下,我想喝带芝士的,推荐?", "a": "芝士奶盖四季春 16 元,奶盖咸香,茶底清爽。", "keywords": ["芝士奶盖四季春"], "ood": false}
+{"intent": "recommend", "q": "亲,你们家芒果的好喝吗?", "a": "推荐杨枝甘露,18 元一杯。", "keywords": ["杨枝甘露"], "ood": false}
+{"intent": "recommend", "q": "请问推荐一下奶茶的饮品", "a": "推荐经典珍珠奶茶,12 元一杯。", "keywords": ["经典珍珠奶茶"], "ood": false}
+{"intent": "recommend", "q": "麻烦问一下,有什么布丁推荐吗?", "a": "推荐焦糖布丁奶茶,14 元一杯。", "keywords": ["焦糖布丁奶茶"], "ood": false}
+{"intent": "recommend", "q": "你好,有没有柠檬的好喝的?", "a": "推荐柠檬气泡水,10 元一杯。", "keywords": ["柠檬气泡水"], "ood": false}
+{"intent": "recommend", "q": "麻烦问一下,不想喝甜的,有什么?", "a": "茉莉绿茶清爽不甜,还可以选无糖,8 元一杯。", "keywords": ["茉莉绿茶"], "ood": false}
+{"intent": "recommend", "q": "你好,我想喝经典的,有什么推荐?", "a": "推荐经典珍珠奶茶,12 元一杯。", "keywords": ["经典珍珠奶茶"], "ood": false}
+{"intent": "recommend", "q": "亲,有什么好喝的吗?", "a": "推荐杨枝甘露,芒果西柚配西米,酸甜清爽,是招牌。", "keywords": ["杨枝甘露"], "ood": false}
+{"intent": "recommend", "q": "你好,推荐一下西柚的饮品", "a": "推荐杨枝甘露,18 元一杯。", "keywords": ["杨枝甘露"], "ood": false}
+{"intent": "recommend", "q": "麻烦问一下,你们家奶盖的好喝吗?", "a": "推荐芝士奶盖四季春,16 元一杯。", "keywords": ["芝士奶盖四季春"], "ood": false}
+{"intent": "recommend", "q": "请问有没有布丁的好喝的?", "a": "推荐焦糖布丁奶茶,14 元一杯。", "keywords": ["焦糖布丁奶茶"], "ood": false}
+{"intent": "recommend", "q": "你好,想试试芒果的,推荐哪个?", "a": "推荐杨枝甘露,18 元一杯。", "keywords": ["杨枝甘露"], "ood": false}
+{"intent": "recommend", "q": "请问推荐一下芋泥的饮品", "a": "推荐芋泥波波鲜奶,17 元一杯。", "keywords": ["芋泥波波鲜奶"], "ood": false}
+{"intent": "recommend", "q": "亲,推荐一下绿茶的饮品", "a": "推荐茉莉绿茶,8 元一杯。", "keywords": ["茉莉绿茶"], "ood": false}
+{"intent": "recommend", "q": "你好,有什么奶茶推荐吗?", "a": "推荐经典珍珠奶茶,12 元一杯。", "keywords": ["经典珍珠奶茶"], "ood": false}
+{"intent": "recommend", "q": "亲,想试试黑糖的,推荐哪个?", "a": "推荐黑糖珍珠鲜奶,15 元一杯。", "keywords": ["黑糖珍珠鲜奶"], "ood": false}
+{"intent": "recommend", "q": "请问我想喝焦糖的,有什么推荐?", "a": "推荐焦糖布丁奶茶,14 元一杯。", "keywords": ["焦糖布丁奶茶"], "ood": false}
+{"intent": "recommend", "q": "请问你们家经典的好喝吗?", "a": "推荐经典珍珠奶茶,12 元一杯。", "keywords": ["经典珍珠奶茶"], "ood": false}
+{"intent": "recommend", "q": "亲,有没有绿茶的好喝的?", "a": "推荐茉莉绿茶,8 元一杯。", "keywords": ["茉莉绿茶"], "ood": false}
+{"intent": "recommend", "q": "有什么芝士推荐吗?", "a": "推荐芝士奶盖四季春,16 元一杯。", "keywords": ["芝士奶盖四季春"], "ood": false}
+{"intent": "recommend", "q": "请问有什么好喝的吗?", "a": "推荐杨枝甘露,芒果西柚配西米,酸甜清爽,是招牌。", "keywords": ["杨枝甘露"], "ood": false}
+{"intent": "recommend", "q": "你好,哪个是招牌?", "a": "招牌是杨枝甘露和经典珍珠奶茶,点单最多。", "keywords": ["杨枝甘露", "经典珍珠奶茶"], "ood": false}
+{"intent": "recommend", "q": "请问有什么鲜奶推荐吗?", "a": "推荐黑糖珍珠鲜奶,15 元一杯。", "keywords": ["黑糖珍珠鲜奶"], "ood": false}
+{"intent": "recommend", "q": "亲,有没有茉莉的好喝的?", "a": "推荐茉莉绿茶,8 元一杯。", "keywords": ["茉莉绿茶"], "ood": false}
+{"intent": "recommend", "q": "请问你们家奶盖的好喝吗?", "a": "推荐芝士奶盖四季春,16 元一杯。", "keywords": ["芝士奶盖四季春"], "ood": false}
+{"intent": "recommend", "q": "麻烦问一下,你们家气泡水的好喝吗?", "a": "推荐柠檬气泡水,10 元一杯。", "keywords": ["柠檬气泡水"], "ood": false}
+{"intent": "recommend", "q": "你好,推荐一下经典的饮品", "a": "推荐经典珍珠奶茶,12 元一杯。", "keywords": ["经典珍珠奶茶"], "ood": false}
+{"intent": "recommend", "q": "请问有什么适合夏天的?", "a": "夏天推荐柠檬气泡水和杨枝甘露,清爽解暑。", "keywords": ["柠檬气泡水", "杨枝甘露"], "ood": false}
+{"intent": "recommend", "q": "麻烦问一下,想试试茉莉的,推荐哪个?", "a": "推荐茉莉绿茶,8 元一杯。", "keywords": ["茉莉绿茶"], "ood": false}
+{"intent": "recommend", "q": "亲,想试试柠檬的,推荐哪个?", "a": "推荐柠檬气泡水,10 元一杯。", "keywords": ["柠檬气泡水"], "ood": false}
+{"intent": "recommend", "q": "麻烦问一下,想试试柠檬的,推荐哪个?", "a": "推荐柠檬气泡水,10 元一杯。", "keywords": ["柠檬气泡水"], "ood": false}
+{"intent": "recommend", "q": "麻烦问一下,你们家黑糖的好喝吗?", "a": "推荐黑糖珍珠鲜奶,15 元一杯。", "keywords": ["黑糖珍珠鲜奶"], "ood": false}
+{"intent": "recommend", "q": "想试试芋泥的,推荐哪个?", "a": "推荐芋泥波波鲜奶,17 元一杯。", "keywords": ["芋泥波波鲜奶"], "ood": false}
+{"intent": "recommend", "q": "麻烦问一下,推荐一下芒果的饮品", "a": "推荐杨枝甘露,18 元一杯。", "keywords": ["杨枝甘露"], "ood": false}
+{"intent": "recommend", "q": "推荐一下鲜奶的饮品", "a": "推荐黑糖珍珠鲜奶,15 元一杯。", "keywords": ["黑糖珍珠鲜奶"], "ood": false}
+{"intent": "recommend", "q": "请问推荐一下柠檬的饮品", "a": "推荐柠檬气泡水,10 元一杯。", "keywords": ["柠檬气泡水"], "ood": false}
+{"intent": "recommend", "q": "亲,有什么焦糖推荐吗?", "a": "推荐焦糖布丁奶茶,14 元一杯。", "keywords": ["焦糖布丁奶茶"], "ood": false}
+{"intent": "recommend", "q": "请问有什么布丁推荐吗?", "a": "推荐焦糖布丁奶茶,14 元一杯。", "keywords": ["焦糖布丁奶茶"], "ood": false}
+{"intent": "recommend", "q": "亲,想试试奶茶的,推荐哪个?", "a": "推荐经典珍珠奶茶,12 元一杯。", "keywords": ["经典珍珠奶茶"], "ood": false}
+{"intent": "recommend", "q": "我想喝芝士的,有什么推荐?", "a": "推荐芝士奶盖四季春,16 元一杯。", "keywords": ["芝士奶盖四季春"], "ood": false}
+{"intent": "recommend", "q": "你好,你们家布丁的好喝吗?", "a": "推荐焦糖布丁奶茶,14 元一杯。", "keywords": ["焦糖布丁奶茶"], "ood": false}
+{"intent": "recommend", "q": "你好,推荐一下黑糖的饮品", "a": "推荐黑糖珍珠鲜奶,15 元一杯。", "keywords": ["黑糖珍珠鲜奶"], "ood": false}
+{"intent": "recommend", "q": "亲,你们家西柚的好喝吗?", "a": "推荐杨枝甘露,18 元一杯。", "keywords": ["杨枝甘露"], "ood": false}
+{"intent": "customize", "q": "请问可以选糖度吗?", "a": "可以,糖度分正常、少糖、半糖、三分甜和无糖。", "keywords": ["无糖", "半糖"], "ood": false}
+{"intent": "customize", "q": "你好,芋泥波波鲜奶能去冰吗?", "a": "可以,芋泥波波鲜奶 支持去冰;部分饮品可做热饮。", "keywords": ["去冰"], "ood": false}
+{"intent": "customize", "q": "麻烦问一下,珍珠奶茶能做无糖吗?", "a": "可以,任何奶茶都可以选无糖,珍珠本身带一点甜味。", "keywords": ["无糖"], "ood": false}
+{"intent": "customize", "q": "你好,黑糖珍珠鲜奶可以做少糖吗?", "a": "可以,黑糖珍珠鲜奶 可以选择糖度,包括无糖和半糖。", "keywords": ["无糖", "半糖"], "ood": false}
+{"intent": "customize", "q": "请问芝士奶盖四季春可以做热的吗?", "a": "可以,芝士奶盖四季春 支持去冰;部分饮品可做热饮。", "keywords": ["去冰"], "ood": false}
+{"intent": "customize", "q": "请问芋泥波波鲜奶可以做少糖吗?", "a": "可以,芋泥波波鲜奶 可以选择糖度,包括无糖和半糖。", "keywords": ["无糖", "半糖"], "ood": false}
+{"intent": "customize", "q": "请问芝士奶盖四季春能选半糖吗?", "a": "可以,芝士奶盖四季春 可以选择糖度,包括无糖和半糖。", "keywords": ["无糖", "半糖"], "ood": false}
+{"intent": "customize", "q": "请问可以加奶盖吗?", "a": "可以,加奶盖加 4 元。", "keywords": ["4"], "ood": false}
+{"intent": "customize", "q": "亲,芝士奶盖四季春可以做少糖吗?", "a": "可以,芝士奶盖四季春 可以选择糖度,包括无糖和半糖。", "keywords": ["无糖", "半糖"], "ood": false}
+{"intent": "customize", "q": "你好,经典珍珠奶茶可以做少糖吗?", "a": "可以,经典珍珠奶茶 可以选择糖度,包括无糖和半糖。", "keywords": ["无糖", "半糖"], "ood": false}
+{"intent": "customize", "q": "黑糖珍珠鲜奶可以做热的吗?", "a": "可以,黑糖珍珠鲜奶 支持去冰;部分饮品可做热饮。", "keywords": ["去冰"], "ood": false}
+{"intent": "customize", "q": "请问能去冰吗?", "a": "可以,冰量可选正常、少冰、去冰,部分饮品可以做热的。", "keywords": ["去冰", "少冰"], "ood": false}
+{"intent": "customize", "q": "亲,芋泥波波鲜奶可以做热的吗?", "a": "可以,芋泥波波鲜奶 支持去冰;部分饮品可做热饮。", "keywords": ["去冰"], "ood": false}
+{"intent": "hours", "q": "请问你们几点开门?", "a": "我们早上 10:00 开门营业。", "keywords": ["10:00", "10"], "ood": false}
+{"intent": "hours", "q": "麻烦问一下,周末营业吗?", "a": "周末和节假日正常营业,10:00-22:00。", "keywords": ["10:00", "22:00"], "ood": false}
+{"intent": "delivery", "q": "外卖几点截止?", "a": "外卖 21:30 截止下单。", "keywords": ["21:30"], "ood": false}
+{"intent": "delivery", "q": "配送费多少钱?", "a": "配送费 3 元,满 25 元免配送费。", "keywords": ["3", "25"], "ood": false}
+{"intent": "member", "q": "亲,有优惠券吗?", "a": "新客注册立减 3 元,每周三第二杯半价。", "keywords": ["3", "半价"], "ood": false}
+{"intent": "member", "q": "你好,怎么成为会员?", "a": "在小程序注册即可成为会员,新客立减 3 元。", "keywords": ["小程序", "3"], "ood": false}
+{"intent": "member", "q": "请问周三有什么活动?", "a": "每周三第二杯半价。", "keywords": ["半价"], "ood": false}
+{"intent": "after_sale", "q": "你好,不好喝可以换吗?", "a": "出品 30 分钟内口味不满意,可以免费重做或退款。", "keywords": ["30", "重做", "退款"], "ood": false}
+{"intent": "after_sale", "q": "请问能退款吗?", "a": "30 分钟内口味不满意可退,外卖破损可退。", "keywords": ["30", "退款"], "ood": false}
+{"intent": "allergen", "q": "请问哪款不含奶?", "a": "茉莉绿茶、柠檬气泡水、杨枝甘露不含牛奶。", "keywords": ["茉莉绿茶", "柠檬气泡水"], "ood": false}
+{"intent": "allergen", "q": "你好,有含牛奶的饮品吗?", "a": "黑糖珍珠鲜奶、芋泥波波鲜奶、芝士奶盖都含乳制品。", "keywords": ["黑糖珍珠鲜奶", "芋泥波波鲜奶"], "ood": false}
+{"intent": "store", "q": "请问怎么找最近的门店?", "a": "打开茶语时光小程序,可以定位并查看最近门店。", "keywords": ["小程序"], "ood": false}
+{"intent": "store", "q": "亲,怎么找最近的门店?", "a": "打开茶语时光小程序,可以定位并查看最近门店。", "keywords": ["小程序"], "ood": false}
+{"intent": "ood", "q": "亲,你们能开锁吗?", "a": "不好意思,这个问题超出了我的服务范围,建议您咨询相关专业渠道。我是茶语时光客服,只解答店内业务。", "keywords": ["抱歉", "无法回答", "服务范围"], "ood": true}
+{"intent": "ood", "q": "亲,你们招人吗?", "a": "抱歉,我是茶语时光的客服,招聘问题请联系我们的官方招聘渠道。", "keywords": ["抱歉", "招聘"], "ood": true}
+{"intent": "ood", "q": "请问帮我订酒店一下", "a": "抱歉,我是茶语时光的客服,只负责门店产品、营业时间、会员优惠和售后相关问题,这个问题我无法回答。", "keywords": ["抱歉", "无法回答", "服务范围"], "ood": true}
+{"intent": "ood", "q": "麻烦问一下,请问哪里可以报培训班?", "a": "抱歉,我是茶语时光的客服,只负责门店产品、营业时间、会员优惠和售后相关问题,这个问题我无法回答。", "keywords": ["抱歉", "无法回答", "服务范围"], "ood": true}
+{"intent": "ood", "q": "麻烦问一下,帮我修手机一下", "a": "不好意思,这个问题超出了我的服务范围,建议您咨询相关专业渠道。我是茶语时光客服,只解答店内业务。", "keywords": ["抱歉", "无法回答", "服务范围"], "ood": true}
+{"intent": "ood", "q": "亲,请问哪里可以退机票?", "a": "不好意思,这个问题超出了我的服务范围,建议您咨询相关专业渠道。我是茶语时光客服,只解答店内业务。", "keywords": ["抱歉", "无法回答", "服务范围"], "ood": true}
+{"intent": "ood", "q": "你好,你们能考驾照吗?", "a": "不好意思,这个问题超出了我的服务范围,建议您咨询相关专业渠道。我是茶语时光客服,只解答店内业务。", "keywords": ["抱歉", "无法回答", "服务范围"], "ood": true}
+{"intent": "ood", "q": "帮我查违章一下", "a": "抱歉,我是茶语时光的客服,只负责门店产品、营业时间、会员优惠和售后相关问题,这个问题我无法回答。", "keywords": ["抱歉", "无法回答", "服务范围"], "ood": true}
+{"intent": "ood", "q": "你好,帮我订酒店一下", "a": "抱歉,我是茶语时光的客服,只负责门店产品、营业时间、会员优惠和售后相关问题,这个问题我无法回答。", "keywords": ["抱歉", "无法回答", "服务范围"], "ood": true}
+{"intent": "ood", "q": "亲,帮我订酒店一下", "a": "抱歉,我是茶语时光的客服,只负责门店产品、营业时间、会员优惠和售后相关问题,这个问题我无法回答。", "keywords": ["抱歉", "无法回答", "服务范围"], "ood": true}
+{"intent": "ood", "q": "请问帮我寄快递一下", "a": "不好意思,这个问题超出了我的服务范围,建议您咨询相关专业渠道。我是茶语时光客服,只解答店内业务。", "keywords": ["抱歉", "无法回答", "服务范围"], "ood": true}
+{"intent": "ood", "q": "麻烦问一下,请问哪里可以退机票?", "a": "不好意思,这个问题超出了我的服务范围,建议您咨询相关专业渠道。我是茶语时光客服,只解答店内业务。", "keywords": ["抱歉", "无法回答", "服务范围"], "ood": true}

@@ -1,89 +1,133 @@
-# 大模型全链路实践(简历项目)
+# 垂直领域客服助手:数据构建 → SFT → RL 对齐(自研底座)
 
-一个完整跑通「预训练 -> 监督微调(SFT) -> 强化学习对齐(RL)」的大模型实践项目。
-三个阶段是同一根主线的递进,不是三个零散 demo。
+一个有**真实业务场景**和**可量化指标**的大模型后训练项目:
+
+虚构奶茶品牌"茶语时光"的智能客服 —— 从知识库出发,自建后训练数据管道,
+在 Qwen2.5-0.5B 上完成 LoRA 微调(SFT)与 GRPO 强化学习对齐,
+并对比 基座 / SFT / RL 在**领域正确率、拒答率、回答简洁度**上的差异。
+
+项目的另一条线是**从零预训练的研究型底座**(1200 万参数 GPT +
+RoPE/GQA/缩放定律消融),作为后训练的模型能力基础与算法功底证明。
+
+## 为什么这样做(对应面试反馈)
+
+- **有现实场景**:客服是垂直领域 LLM 最典型的落地场景,问题、答案、拒答边界都清晰可定义
+- **数据是重点**:不下载现成数据集,而是自建"种子编写 → 模板扩展 → 清洗去重 → 分层切分"的
+  完整后训练数据管道,这是面试官最关心的部分
+- **有指标结果**:同一评测集上给出基座/SFT/RL 的三列对比表(正确率、拒答率、简洁度)
+- **有思考深度**:README 末尾讨论"后训练的收益 vs 工程化",用本项目自己的数字说话
 
 ## 环境
 
-- GPU:RTX 3050 Laptop(4GB 显存)
-- Python 3.11.9 + CUDA 版 PyTorch 2.5.1+cu121
+- GPU:RTX 3050 Laptop(4GB 显存),PyTorch 2.7.1+cu118
 - 工具链:transformers / datasets / accelerate / peft / trl / bitsandbytes
-
-所有代码、虚拟环境、下载缓存都在 D:\LLM-Project 下,C 盘零占用。
+- 所有代码、虚拟环境、下载缓存都在 D:\LLM-Project 下
 
 ## 目录结构
 
 ```
-pretrain/   第 1 天:从零预训练微型 GPT(约 1200 万参数)
-sft/        第 2 天:Qwen2.5-0.5B LoRA 监督微调
-rl/         第 3 天:GRPO 强化学习对齐
-data/       处理后的训练数据(不入库)
-models/     训练产物:tokenizer、检查点(不入库)
+data_eng/   后训练数据构建管道(知识库 + 种子 + 扩展 + 清洗 + 切分)
+pretrain/   从零预训练微型 GPT(1200 万参数)+ 结构消融实验
+sft/        Qwen2.5-0.5B LoRA 监督微调 + 领域评测
+rl/         GRPO 强化学习对齐(领域模式 + 数学模式)
+models/     训练产物(不入库)
 ```
 
-## 每日路线
+## 一、后训练数据构建(项目核心)
 
-### 第 1 天:从零预训练微型 GPT
+### 1. 知识库(kb.py)
 
-学什么:tokenizer 原理、数据处理管道、Transformer 结构、训练循环。
+虚构品牌"茶语时光"的完整业务资料:菜单与价格、小料加价、营业时间、外卖规则、
+会员积分、优惠券、售后政策、过敏原、门店信息。所有答案都从知识库生成,保证事实一致。
+
+### 2. 种子(seeds.py)
+
+人工基于知识库编写 60 余条高质量问答,覆盖 10 类意图(价格/推荐/定制/营业时间/
+外卖/会员/售后/过敏原/门店/**知识库外拒答**),并标注答案关键实体。
+
+### 3. 扩展 + 清洗 + 切分(build_dataset.py)
 
 ```powershell
-.\start.ps1
-python pretrain/build_data.py    # 下载 TinyStories + 训练 BPE + 生成数据
-python pretrain/smoke_test.py    # 快速自检模型
-python pretrain/train.py         # 正式训练(约 1~2 小时)
-python pretrain/sample.py --prompt "Once upon a time,"   # 生成故事
+python data_eng/build_dataset.py
 ```
 
-常用参数:`--max-steps` 控制训练步数(先跑 `--max-steps 300` 验证流程),
-`--vocab-size` 控制词表大小,`--resume` 从检查点继续。
+- 模板 + 实体替换:价格模板 × 全部产品、推荐模板 × 产品标签、拒答模板 × 随机主题
+- 清洗:规范化(统一标点/去空白)、精确去重、长度过滤
+- 切分:按意图分层 80/10/10,评测集与训练集严格分离
+- 输出:`data_eng/output/` 下 train/val/test.jsonl + stats.json(数据报告)
 
-**研究实验(重点,面试加分项):**
+## 二、领域 SFT
 
 ```powershell
-# 结构消融:RoPE vs 学习式位置编码
+python sft/train_sft.py --data-file data_eng/output/train.jsonl
+```
+
+4bit 量化 + LoRA,1000+ 条领域数据,训练产物保存到 models/sft。
+
+## 三、领域评测(指标结果)
+
+```powershell
+python sft/eval_domain.py --adapters models/sft
+```
+
+在同一评测集上给出:
+
+| 模型 | 领域正确率 | 拒答率 | 总正确率 | 未命中率 | 平均回答长度 |
+|---|---|---|---|---|---|
+| 基座 | 待填 | 待填 | 待填 | 待填 | 待填 |
+| SFT | 待填 | 待填 | 待填 | 待填 | 待填 |
+| RL | 待填 | 待填 | 待填 | 待填 | 待填 |
+
+指标定义:领域正确率 = 回答包含答案关键实体;拒答率 = 知识库外问题被正确拒绝;
+未命中率 = 领域问题上答非所问(幻觉代理指标)。
+
+## 四、领域 GRPO(拒答对齐)
+
+```powershell
+python rl/train_grpo.py                    # 默认 domain 模式,从 SFT 继续
+python sft/eval_domain.py --adapters models/sft models/rl
+```
+
+奖励设计(纯规则):
+- 知识库内问题:回答包含答案关键实体 +1.0
+- 知识库外问题:正确拒答(不瞎编)+1.0
+- 回答简洁(≤40 字符)+0.5
+
+RL 的目标是让模型"会的就答对、不会的就拒答",而不是胡编 —— 这正是对齐的实际意义。
+
+## 五、从零预训练研究(算法功底)
+
+```powershell
 python pretrain/train.py --max-steps 2000 --pos-encoding rope --out-dir models/exp_rope
 python pretrain/train.py --max-steps 2000 --pos-encoding learned --out-dir models/exp_learned
-
-# 注意力消融:GQA(一半 KV 头)vs MHA
-python pretrain/train.py --max-steps 2000 --attention-type gqa --out-dir models/exp_gqa
-
-# 缩放实验:不同参数量的模型,画"参数量 vs loss"
-python pretrain/train.py --max-steps 2000 --n-layer 2 --n-embd 128 --n-head 2 --out-dir models/exp_1m
-python pretrain/train.py --max-steps 2000 --n-layer 4 --n-embd 256 --n-head 4 --out-dir models/exp_5m
-
-# 画图对比
-python pretrain/plot_results.py --log models/exp_rope/log.jsonl --log models/exp_learned/log.jsonl
 python pretrain/plot_results.py --scaling
-
-# 生成质量评估(多样性指标)
-python pretrain/eval_gen.py --ckpt models/pretrain/best.pt
 ```
 
-### 第 2 天:Qwen2.5-0.5B LoRA 监督微调(SFT)
+已完成的结论:
+- 6000 步基线 val_loss 1.97,能生成连贯英文小故事
+- **RoPE vs 学习式位置编码:val_loss 2.378 vs 2.515(-5.4%)**
+- **GQA vs MHA:省 7.2% 参数,仅损失 0.4% 效果**
+- **缩放定律:1M/5M/12M/25M 四个规模验证参数量与 loss 的幂律关系**
 
-学什么:4bit 量化、LoRA 原理、指令数据格式(chat template)、效果对比。
+## 六、讨论:后训练的收益 vs 工程化
 
-```powershell
-python sft/train_sft.py              # 下载 Qwen2.5-0.5B + 中文指令数据,LoRA 微调
-python sft/infer_sft.py --compare    # 基座 vs 微调后对比,生成 comparison.md
-```
+用本项目的数据回答这个面试高频问题:
 
-### 第 3 天:GRPO 强化学习对齐(RL)
-
-学什么:强化学习对齐的原理、GRPO 算法、规则奖励函数设计、前后对比。
-
-```powershell
-python rl/train_grpo.py              # 从 SFT 模型继续,GRPO 训练数学题对齐
-python rl/eval_rl.py                 # SFT vs RL 正确率对比,生成 rl_comparison.md
-```
-
-奖励设计:答案正确 +1.0,写出"答案是 ..."格式 +0.5,完全基于规则,不需要奖励模型。
+1. **后训练的直接收益**:基座模型不会跟人对话,也不会遵守业务边界;SFT 让它学会
+   "按知识库回答",RL 进一步强化"不确定就拒答"。评测表里三个模型的差距就是收益。
+2. **后训练的边际收益递减**:SFT 解决了 80% 的"会说话",RL 解决的是剩余 20% 的
+   "守边界、少幻觉",而且 RL 对奖励设计和数据质量极其敏感(本项目就经历过
+   GRPO 不收敛,通过诊断奖励信号定位到截断与提示词不一致问题)。
+3. **工程化同样重要**:4bit 量化、LoRA、推理批处理、评测自动化 —— 工程能力决定了
+   模型能不能落地。后训练和工程不是二选一,是"模型能力"和"交付能力"两条腿。
 
 ## 简历写法(参考)
 
-项目名:**大模型全链路实践:从零预训练到强化学习对齐**
+项目名:**垂直领域客服助手:数据构建与 SFT/RL 对齐(自研 1200 万参数底座)**
 
-- 从零预训练 1200 万参数 GPT,自训练 BPE tokenizer,数据管道全自建
-- 基于 Qwen2.5-0.5B 完成 LoRA 监督微调,并在指令数据上评测
-- 使用 GRPO 完成强化学习对齐,量化对比 SFT 前后 / RL 前后效果
+- 自建后训练数据管道:人工种子 + 模板扩展 + 规则清洗去重,产出千级领域指令数据
+  与拒答样本,意图分层切分训练/评测集
+- 基于 Qwen2.5-0.5B 完成 LoRA 微调与 GRPO 对齐,在同一评测集上量化对比
+  基座/SFT/RL 的领域正确率、拒答率、回答简洁度
+- 从零预训练 1200 万参数 GPT,实现 RoPE/GQA/ALiBi 等结构变体,四个规模验证
+  缩放定律,RoPE 相比学习式位置编码 loss 降低 5.4%
