@@ -102,7 +102,12 @@ def main():
     rows = load_test_set(args.data_file)
     print(f"评测集:{len(rows)} 条(领域 {sum(1 for r in rows if not r['ood'])} / 拒答 {sum(1 for r in rows if r['ood'])})")
 
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(
+            args.model_name, trust_remote_code=True, local_files_only=True
+        )
+    except Exception:
+        tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 

@@ -47,6 +47,28 @@ def parse_args():
     return parser.parse_args()
 
 
+def load_tokenizer(model_name):
+    """优先读本地缓存,避免联网。"""
+    try:
+        return AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, local_files_only=True)
+    except Exception:
+        print("本地缓存未找到,尝试联网加载(网络受限时可设置 HF_ENDPOINT 镜像)...")
+        return AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+
+
+def load_model(model_name, bnb_config):
+    try:
+        return AutoModelForCausalLM.from_pretrained(
+            model_name, quantization_config=bnb_config, device_map="auto",
+            trust_remote_code=True, local_files_only=True,
+        )
+    except Exception:
+        print("本地缓存未找到,尝试联网加载...")
+        return AutoModelForCausalLM.from_pretrained(
+            model_name, quantization_config=bnb_config, device_map="auto", trust_remote_code=True
+        )
+
+
 def format_example(row):
     """把 Alpaca 格式(instruction/input/output)转成对话消息。"""
     instruction = row["instruction"]
@@ -65,7 +87,7 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
 
     # ---------- 1. tokenizer ----------
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
+    tokenizer = load_tokenizer(args.model_name)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token  # Qwen 没有 pad token,用 eos 代替
 
@@ -77,12 +99,7 @@ def main():
         bnb_4bit_use_double_quant=True,
     )
     print(f"正在以 4bit 量化加载 {args.model_name} (首次运行会下载模型)...")
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model_name,
-        quantization_config=bnb_config,
-        device_map="auto",
-        trust_remote_code=True,
-    )
+    model = load_model(args.model_name, bnb_config)
     model = prepare_model_for_kbit_training(model)
     model.config.use_cache = False  # 训练时关闭 KV 缓存,配合梯度检查点省显存
 
