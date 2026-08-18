@@ -56,7 +56,7 @@ def parse_args():
     parser.add_argument("--batch-size", type=int, default=2)
     parser.add_argument("--grad-accum", type=int, default=4, help="累积步数(与 batch 乘积需能被候选数整除)")
     parser.add_argument("--num-generations", type=int, default=4, help="每题生成几个候选答案")
-    parser.add_argument("--max-completion-length", type=int, default=48, help="回答上限,短回答奖励信号更密集")
+    parser.add_argument("--max-completion-length", type=int, default=64, help="回答上限,给答案留足空间")
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output-dir", type=str, default="models/rl")
@@ -74,7 +74,7 @@ def make_math_dataset(num_samples, seed):
         else:
             a, b = max(a, b), min(a, b)  # 保证减法结果非负
             prompt, answer = f"请计算:{a} - {b} = ?", str(a - b)
-        rows.append({"prompt": prompt + "\n请给出最终答案。", "answer": answer})
+        rows.append({"prompt": prompt, "answer": answer})
     return Dataset.from_list(rows)
 
 
@@ -85,17 +85,17 @@ def extract_last_number(text):
 
 
 def correctness_reward(prompts, completions, answer, **kwargs):
-    """答案正确得 1 分。answer 来自数据集列,由 trainer 自动传入。"""
+    """答案出现在回答中即得 1 分(独立数字,防止被 25 误匹配 125)。"""
     rewards = []
     for comp, ans in zip(completions, answer):
-        pred = extract_last_number(comp)
-        rewards.append(1.0 if pred is not None and pred == int(ans) else 0.0)
+        found = re.search(rf"(?<!\d){int(ans)}(?!\d)", comp)
+        rewards.append(1.0 if found else 0.0)
     return rewards
 
 
 def format_reward(prompts, completions, **kwargs):
-    """写出了"答案"字样得 0.5 分,鼓励模型把结论明确写出来。"""
-    return [0.5 if re.search(r"答案", c) else 0.0 for c in completions]
+    """回答简洁(≤40 字符)得 0.5 分,鼓励直接给答案、不要长篇大论。"""
+    return [0.5 if len(c.strip()) <= 40 else 0.0 for c in completions]
 
 
 def main():
@@ -136,7 +136,9 @@ def main():
         report_to="none",
         num_generations=args.num_generations,
         max_completion_length=args.max_completion_length,
-        temperature=0.8,  # 降低采样噪声,让优势估计更稳
+        temperature=0.7,  # 降低采样噪声,让优势估计更稳
+        top_p=0.95,
+        top_k=50,
         beta=0.04,  # KL 惩罚系数:约束 RL 后的模型别离 SFT 太远
     )
     trainer = GRPOTrainer(
