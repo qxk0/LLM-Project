@@ -61,7 +61,7 @@ def parse_args():
     parser.add_argument("--grad-accum", type=int, default=4, help="累积步数(与 batch 乘积需能被候选数整除)")
     parser.add_argument("--num-generations", type=int, default=4, help="每题生成几个候选答案")
     parser.add_argument("--max-completion-length", type=int, default=64, help="回答上限,给答案留足空间")
-    parser.add_argument("--lr", type=float, default=1e-4)
+    parser.add_argument("--lr", type=float, default=1.5e-4)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output-dir", type=str, default="models/rl")
     return parser.parse_args()
@@ -82,8 +82,8 @@ def make_math_dataset(num_samples, seed):
     return Dataset.from_list(rows)
 
 
-def make_domain_dataset(path):
-    """读取数据管道产物:领域问答 + 拒答样本,每个样本带答案关键词。"""
+def make_domain_dataset(path, ood_ratio=0.2, seed=42):
+    """读取数据管道产物,并把拒答样本占比提到 ood_ratio(聚焦拒答对齐)。"""
     rows = []
     with open(path, encoding="utf-8") as f:
         for line in f:
@@ -97,7 +97,13 @@ def make_domain_dataset(path):
                         "ood": r["ood"],
                     }
                 )
-    return Dataset.from_list(rows)
+    ood = [r for r in rows if r["ood"]]
+    ind = [r for r in rows if not r["ood"]]
+    rng = random.Random(seed)
+    n_ind = min(len(ind), int(len(ood) * (1 - ood_ratio) / ood_ratio))
+    sampled = rng.sample(ind, n_ind) + ood
+    rng.shuffle(sampled)
+    return Dataset.from_list(sampled)
 
 
 def extract_last_number(text):
@@ -116,22 +122,22 @@ def correctness_reward(prompts, completions, answer, **kwargs):
 
 
 def format_reward(prompts, completions, **kwargs):
-    """回答简洁(≤40 字符)得 0.5 分,鼓励直接给答案、不要长篇大论。"""
-    return [0.5 if len(c.strip()) <= 40 else 0.0 for c in completions]
+    """回答简洁(≤80 字符)得 0.1 分(低权重,别压过答对)。"""
+    return [0.1 if len(c.strip()) <= 80 else 0.0 for c in completions]
 
 
 def domain_reward(prompts, completions, answer_keywords, ood, **kwargs):
-    """领域客服对齐奖励:
-    知识库内问题 -> 回答包含答案关键实体得 1 分;
-    知识库外问题 -> 正确拒答(不瞎编)得 1 分。
+    """领域客服对齐奖励(对称惩罚,梯度更强):
+    知识库内问题 -> 包含答案关键实体 +1,否则 -1;
+    知识库外问题 -> 正确拒答 +1,瞎编 -1。
     """
     rewards = []
     for comp, kws, is_ood in zip(completions, answer_keywords, ood):
         if is_ood:
             refused = any(m in comp for m in ["抱歉", "不好意思", "无法回答", "超出", "服务范围", "咨询"])
-            rewards.append(1.0 if refused else 0.0)
+            rewards.append(1.0 if refused else -1.0)
         else:
-            rewards.append(1.0 if any(k in comp for k in kws) else 0.0)
+            rewards.append(1.0 if any(k in comp for k in kws) else -1.0)
     return rewards
 
 
@@ -143,7 +149,8 @@ def main():
     if args.mode == "domain":
         dataset = make_domain_dataset(args.data_file)
         reward_funcs = [domain_reward, format_reward]
-        print(f"加载领域数据 {len(dataset)} 条(数据管道产物)")
+        ood_count = sum(1 for r in dataset if r["ood"])
+        print(f"加载领域数据 {len(dataset)} 条(拒答样本 {ood_count} 条,占比 {ood_count / len(dataset):.0%})")
     else:
         dataset = make_math_dataset(args.num_samples, args.seed)
         reward_funcs = [correctness_reward, format_reward]

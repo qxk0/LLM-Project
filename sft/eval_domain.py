@@ -28,6 +28,8 @@ def parse_args():
                         help="要对比的适配器,如 models/sft models/rl;留空则只评测基座")
     parser.add_argument("--report", type=str, default="data_eng/output/eval_domain.md")
     parser.add_argument("--max-new-tokens", type=int, default=64)
+    parser.add_argument("--ood-only", action="store_true", help="只评测拒答样本(快速验证)")
+    parser.add_argument("--limit", type=int, default=None, help="最多评测多少条")
     return parser.parse_args()
 
 
@@ -100,6 +102,10 @@ def evaluate(model, tokenizer, rows, max_new):
 def main():
     args = parse_args()
     rows = load_test_set(args.data_file)
+    if args.ood_only:
+        rows = [r for r in rows if r["ood"]]
+    if args.limit:
+        rows = rows[: args.limit]
     print(f"评测集:{len(rows)} 条(领域 {sum(1 for r in rows if not r['ood'])} / 拒答 {sum(1 for r in rows if r['ood'])})")
 
     try:
