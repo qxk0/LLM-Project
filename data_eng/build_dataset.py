@@ -218,8 +218,19 @@ def clean_and_split(samples):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="构建领域后训练数据")
+    parser.add_argument("--extra-file", type=str, default=None,
+                        help="额外的数据文件(如 evolve.py 蒸馏产物),合并后统一清洗切分")
+    args = parser.parse_args()
+
     os.makedirs(OUT_DIR, exist_ok=True)
     samples, source = expand_seeds()
+    if args.extra_file:
+        with open(args.extra_file, encoding="utf-8") as f:
+            extra = [json.loads(line) for line in f if line.strip()]
+        samples.extend(extra)
+        source["evolved"] = len(extra)
+        print(f"合并额外数据 {len(extra)} 条: {args.extra_file}")
     unique, dropped, train, val, test = clean_and_split(samples)
 
     for name, rows in [("train", train), ("val", val), ("test", test)]:
