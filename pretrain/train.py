@@ -100,6 +100,8 @@ def main():
     parser.add_argument("--pos-encoding", type=str, default=None, choices=["learned", "rope", "alibi"])
     parser.add_argument("--attention-type", type=str, default=None, choices=["mha", "mqa", "gqa"])
     parser.add_argument("--tie-embeddings", type=str, default=None, choices=["true", "false"])
+    parser.add_argument("--activation", type=str, default=None, choices=["gelu", "swiglu"])
+    parser.add_argument("--norm-type", type=str, default=None, choices=["layernorm", "rmsnorm"])
     parser.add_argument("--out-dir", type=str, default=None, help="实验输出目录")
     parser.add_argument("--resume", type=str, default=None, help="从检查点继续训练")
     args = parser.parse_args()
@@ -123,6 +125,10 @@ def main():
         cfg.attention_type = args.attention_type
     if args.tie_embeddings:
         cfg.tie_embeddings = args.tie_embeddings == "true"
+    if args.activation:
+        cfg.activation = args.activation
+    if args.norm_type:
+        cfg.norm_type = args.norm_type
     if args.out_dir:
         cfg.out_dir = args.out_dir
 
@@ -159,6 +165,8 @@ def main():
         attention_type=cfg.attention_type,
         num_kv_heads=cfg.num_kv_heads,
         tie_embeddings=cfg.tie_embeddings,
+        activation=cfg.activation,
+        norm_type=cfg.norm_type,
     )
     model = GPT(model_cfg).to(device)
     n_params = sum(p.numel() for p in model.parameters())

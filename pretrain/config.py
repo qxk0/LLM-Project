@@ -27,6 +27,8 @@ class PretrainConfig:
     attention_type: str = "mha"                   # mha | mqa | gqa
     num_kv_heads: int = 0                         # GQA 的 KV 头数(0=自动取一半)
     tie_embeddings: bool = True                   # 是否共享输入/输出词嵌入
+    activation: str = "gelu"                       # gelu | swiglu(Llama/Qwen 同款)
+    norm_type: str = "layernorm"                   # layernorm | rmsnorm(Llama/Qwen 同款)
 
     # ---------- 训练 ----------
     batch_size: int = 32                          # 每个 batch 的样本数

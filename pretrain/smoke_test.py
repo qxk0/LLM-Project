@@ -13,6 +13,7 @@ def main():
         GPTConfig(),  # 默认:学习式位置编码 + MHA + 共享词嵌入
         GPTConfig(pos_encoding="rope", attention_type="gqa", num_kv_heads=2),
         GPTConfig(pos_encoding="alibi", attention_type="mqa", tie_embeddings=False),
+        GPTConfig(pos_encoding="rope", activation="swiglu", norm_type="rmsnorm"),
     ]
     for cfg in variants:
         model = GPT(cfg).to(device)
@@ -21,7 +22,7 @@ def main():
         logits, loss = model(x, x)
         loss.backward()
         print(
-            f"OK [{cfg.pos_encoding}/{cfg.attention_type}/tie={cfg.tie_embeddings}] "
+            f"OK [{cfg.pos_encoding}/{cfg.attention_type}/{cfg.activation}/{cfg.norm_type}] "
             f"参数 {n_params / 1e6:.2f}M,loss = {loss.item():.4f}"
         )
     if device == "cuda":

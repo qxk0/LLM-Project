@@ -28,6 +28,8 @@ class GPTConfig:
     attention_type: str = "mha"       # mha | mqa | gqa
     num_kv_heads: int = 0             # GQA 的 KV 头数,0=自动取一半
     tie_embeddings: bool = True       # 输入/输出词嵌入是否共享
+    activation: str = "gelu"          # gelu | swiglu(Llama/Qwen 同款)
+    norm_type: str = "layernorm"      # layernorm | rmsnorm(Llama/Qwen 同款)
 
 
 class LayerNorm(nn.Module):
@@ -38,6 +40,19 @@ class LayerNorm(nn.Module):
 
     def forward(self, x):
         return F.layer_norm(x, self.weight.shape, self.weight, self.bias, 1e-5)
+
+
+class RMSNorm(nn.Module):
+    """RMSNorm:去掉均值中心化只做缩放(Llama/Qwen 同款,计算量更小)。"""
+
+    def __init__(self, ndim: int, eps: float = 1e-5):
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(ndim))
+        self.eps = eps
+
+    def forward(self, x):
+        rms = x.pow(2).mean(-1, keepdim=True).sqrt() + self.eps
+        return x / rms * self.weight
 
 
 class CausalSelfAttention(nn.Module):
@@ -119,13 +134,23 @@ class CausalSelfAttention(nn.Module):
             k = k.repeat_interleave(self.n_rep, dim=1)
             v = v.repeat_interleave(self.n_rep, dim=1)
 
-        att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(self.head_dim))
         if self.pos_encoding == "alibi":
+            # ALiBi 需要自定义偏置,走手写路径
+            att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(self.head_dim))
             att = att + self.alibi_bias[:, :, :T, :T]
-        att = att.masked_fill(self.bias[:, :, :T, :T] == 0, float("-inf"))
-        att = F.softmax(att, dim=-1)
-        att = self.attn_dropout(att)
-        y = att @ v
+            att = att.masked_fill(self.bias[:, :, :T, :T] == 0, float("-inf"))
+            att = F.softmax(att, dim=-1)
+            att = self.attn_dropout(att)
+            y = att @ v
+        else:
+            # PyTorch 内置 Flash Attention(SDPA),显存 O(T) 且更快
+            y = F.scaled_dot_product_attention(
+                q,
+                k,
+                v,
+                is_causal=True,
+                dropout_p=self.attn_dropout.p if self.training else 0.0,
+            )
         y = y.transpose(1, 2).contiguous().view(B, T, C)
         return self.resid_dropout(self.c_proj(y))
 
@@ -139,16 +164,26 @@ class CausalSelfAttention(nn.Module):
 
 
 class MLP(nn.Module):
-    """前馈网络:每个位置独立经过 线性 -> GELU -> 线性。"""
+    """前馈网络:GELU 版(线性->GELU->线性)或 SwiGLU 版(门控线性单元)。"""
 
     def __init__(self, config: GPTConfig):
         super().__init__()
-        self.c_fc = nn.Linear(config.n_embd, 4 * config.n_embd, bias=False)
-        self.gelu = nn.GELU()
-        self.c_proj = nn.Linear(4 * config.n_embd, config.n_embd, bias=False)
+        if config.activation == "swiglu":
+            # SwiGLU 有两个投影(gate+up),用 8/3 倍宽度使参数量与 GELU(4x) 持平
+            swiglu_width = int(4 * config.n_embd * 2 / 3)
+            self.gate_proj = nn.Linear(config.n_embd, swiglu_width, bias=False)
+            self.up_proj = nn.Linear(config.n_embd, swiglu_width, bias=False)
+            self.down_proj = nn.Linear(swiglu_width, config.n_embd, bias=False)
+        else:
+            self.c_fc = nn.Linear(config.n_embd, 4 * config.n_embd, bias=False)
+            self.gelu = nn.GELU()
+            self.c_proj = nn.Linear(4 * config.n_embd, config.n_embd, bias=False)
         self.dropout = nn.Dropout(config.dropout)
 
     def forward(self, x):
+        if hasattr(self, "gate_proj"):
+            # SwiGLU: Swish(xW_gate) * (xW_up),信息经门控选择性通过
+            return self.dropout(self.down_proj(F.silu(self.gate_proj(x)) * self.up_proj(x)))
         return self.dropout(self.c_proj(self.gelu(self.c_fc(x))))
 
 
@@ -157,9 +192,10 @@ class Block(nn.Module):
 
     def __init__(self, config: GPTConfig):
         super().__init__()
-        self.ln_1 = LayerNorm(config.n_embd)
+        norm_cls = RMSNorm if config.norm_type == "rmsnorm" else LayerNorm
+        self.ln_1 = norm_cls(config.n_embd)
         self.attn = CausalSelfAttention(config)
-        self.ln_2 = LayerNorm(config.n_embd)
+        self.ln_2 = norm_cls(config.n_embd)
         self.mlp = MLP(config)
 
     def forward(self, x):
@@ -180,7 +216,8 @@ class GPT(nn.Module):
             self.position_embedding = None
         self.drop = nn.Dropout(config.dropout)
         self.blocks = nn.ModuleList([Block(config) for _ in range(config.n_layer)])
-        self.ln_f = LayerNorm(config.n_embd)
+        norm_cls = RMSNorm if config.norm_type == "rmsnorm" else LayerNorm
+        self.ln_f = norm_cls(config.n_embd)
 
         # 输出头;tie_embeddings=True 时与输入 embedding 共享权重(参数减半、训练更稳)
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
