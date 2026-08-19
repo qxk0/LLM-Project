@@ -104,7 +104,12 @@ def main():
     rows = load_rows(args.data_file, args.max_pairs)
     print(f"加载 {len(rows)} 条领域数据")
 
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(
+            args.model_name, trust_remote_code=True, local_files_only=True
+        )
+    except Exception:
+        tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
