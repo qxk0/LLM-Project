@@ -144,7 +144,6 @@ def main():
         report_to="none",
         beta=0.1,  # DPO 的 KL 强度
         max_length=128,
-        max_prompt_length=64,
     )
     trainer = DPOTrainer(
         model=model,
