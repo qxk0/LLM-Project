@@ -31,10 +31,10 @@ def parse_args():
     parser.add_argument("--data-file", type=str, default="data_eng/output/train.jsonl")
     parser.add_argument("--max-pairs", type=int, default=400, help="最多构造多少偏好对")
     parser.add_argument("--num-samples", type=int, default=4, help="每题采样几个回答")
-    parser.add_argument("--max-steps", type=int, default=300)
+    parser.add_argument("--max-steps", type=int, default=200)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--grad-accum", type=int, default=8)
-    parser.add_argument("--lr", type=float, default=1e-4)
+    parser.add_argument("--lr", type=float, default=5e-5)
     parser.add_argument("--output-dir", type=str, default="models/dpo")
     return parser.parse_args()
 
@@ -83,12 +83,13 @@ def build_preference_pairs(model, tokenizer, rows, num_samples):
             tokenizer.decode(o[inputs.input_ids.shape[1] :], skip_special_tokens=True).strip()
             for o in out
         ]
-        scored = [(score_response(c, r["keywords"], r["ood"]), c) for c in completions]
-        scored.sort(key=lambda x: x[0], reverse=True)
-        best_score, chosen = scored[0]
-        worst_score, rejected = scored[-1]
-        if best_score > worst_score:  # 分数不同才保留,避免噪声对
-            pairs.append({"prompt": prompt, "chosen": chosen, "rejected": rejected})
+        # chosen 用知识库金标准答案(保证优选侧正确);rejected 用采样出的最差回答
+        gold_score = score_response(r["a"], r["keywords"], r["ood"])
+        worst_score, rejected = min(
+            (score_response(c, r["keywords"], r["ood"]), c) for c in completions
+        )
+        if worst_score < gold_score:  # 采样回答确实比金标准差才保留
+            pairs.append({"prompt": prompt, "chosen": r["a"], "rejected": rejected})
         else:
             skipped += 1
         if (i + 1) % 50 == 0:
