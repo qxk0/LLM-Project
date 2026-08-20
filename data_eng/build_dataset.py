@@ -193,13 +193,15 @@ def clean_and_split(samples):
     dropped = 0
     for s in samples:
         qn = normalize(s["q"])
-        if qn in seen:
+        an = normalize(s["a"])
+        key = (qn, an)  # 按(问题,答案)去重:同一问题的不同答案保留,onpolicy 变体才有效
+        if key in seen:
             dropped += 1
             continue
         if not (4 <= len(s["q"]) <= 80) or not (5 <= len(s["a"]) <= 200):
             dropped += 1
             continue
-        seen.add(qn)
+        seen.add(key)
         unique.append(s)
 
     # 按意图分层:每个意图内随机 80/10/10

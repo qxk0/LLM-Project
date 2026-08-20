@@ -196,10 +196,10 @@ def main():
         # 对齐技巧:
         #  - loss_type="dapo": DAPO 动态裁剪(正负优势分开裁剪,缓解奖励饱和)
         #  - importance_sampling_level="sequence": GSPO 序列级损失,去掉长度偏置
-        #  - mask_truncated_completions=True: 被 max_completion_length 截断的回答不计入损失
+        #  - mask_truncated_completions 默认关闭(实验发现开启后领域正确率下降,保留开关便于复现)
         loss_type="grpo" if args.seq_level else args.loss_type,
         importance_sampling_level="sequence" if args.seq_level else "token",
-        mask_truncated_completions=True,
+        mask_truncated_completions=False,
         beta=0.04,  # KL 惩罚系数:约束 RL 后的模型别离 SFT 太远
     )
     trainer = GRPOTrainer(

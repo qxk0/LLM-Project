@@ -1,6 +1,6 @@
 {
-  "raw_count": 1366,
-  "dedup_dropped": 30,
+  "raw_count": 2887,
+  "dedup_dropped": 1551,
   "final_count": 1336,
   "expansion_ratio": 24.3,
   "source": {
@@ -11,7 +11,8 @@
     "topping_template": 5,
     "ood_template": 16,
     "paraphrase": 1024,
-    "evolved": 86
+    "evolved": 86,
+    "onpolicy": 1521
   },
   "intent_dist": {
     "price": 404,
