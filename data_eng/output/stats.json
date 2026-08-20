@@ -1,8 +1,8 @@
 {
-  "raw_count": 1280,
+  "raw_count": 1366,
   "dedup_dropped": 30,
-  "final_count": 1250,
-  "expansion_ratio": 22.7,
+  "final_count": 1336,
+  "expansion_ratio": 24.3,
   "source": {
     "seed": 55,
     "price_template": 64,
@@ -10,24 +10,25 @@
     "customize_template": 20,
     "topping_template": 5,
     "ood_template": 16,
-    "paraphrase": 1024
+    "paraphrase": 1024,
+    "evolved": 86
   },
   "intent_dist": {
-    "price": 395,
-    "recommend": 495,
-    "customize": 125,
-    "hours": 20,
-    "delivery": 20,
-    "member": 25,
-    "after_sale": 15,
-    "allergen": 15,
-    "store": 20,
-    "ood": 120
+    "price": 404,
+    "recommend": 504,
+    "customize": 134,
+    "hours": 29,
+    "delivery": 29,
+    "member": 34,
+    "after_sale": 24,
+    "allergen": 24,
+    "store": 28,
+    "ood": 126
   },
   "split": {
-    "train": 1000,
-    "val": 122,
-    "test": 128
+    "train": 1066,
+    "val": 132,
+    "test": 138
   },
-  "ood_ratio": 0.096
+  "ood_ratio": 0.094
 }
