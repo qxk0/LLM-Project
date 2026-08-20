@@ -64,6 +64,10 @@ def parse_args():
     parser.add_argument("--lr", type=float, default=1.5e-4)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output-dir", type=str, default="models/rl")
+    parser.add_argument("--loss-type", type=str, default="dapo", choices=["dapo", "grpo"],
+                        help="dapo=动态裁剪(默认,clip-higher);grpo=经典GRPO")
+    parser.add_argument("--seq-level", action="store_true",
+                        help="GSPO 风格:序列级损失,消除'长回答梯度更大'的长度偏差(需 --loss-type grpo)")
     return parser.parse_args()
 
 
@@ -189,6 +193,13 @@ def main():
         temperature=0.7,  # 降低采样噪声,让优势估计更稳
         top_p=0.95,
         top_k=50,
+        # 对齐技巧:
+        #  - loss_type="dapo": DAPO 动态裁剪(正负优势分开裁剪,缓解奖励饱和)
+        #  - importance_sampling_level="sequence": GSPO 序列级损失,去掉长度偏置
+        #  - mask_truncated_completions=True: 被 max_completion_length 截断的回答不计入损失
+        loss_type="grpo" if args.seq_level else args.loss_type,
+        importance_sampling_level="sequence" if args.seq_level else "token",
+        mask_truncated_completions=True,
         beta=0.04,  # KL 惩罚系数:约束 RL 后的模型别离 SFT 太远
     )
     trainer = GRPOTrainer(
@@ -202,7 +213,10 @@ def main():
     # 必须切回 "default",否则训练更新的是 ref,而保存时又会被删掉(等于白训)。
     model.set_adapter("default")
 
-    print(f"开始 GRPO 训练:{args.max_steps} 步,每题生成 {args.num_generations} 个候选")
+    print(
+        f"开始 GRPO 训练:{args.max_steps} 步,loss={training_args.loss_type}"
+        f"{'(序列级)' if args.seq_level else ''},截断掩码已开启"
+    )
     trainer.train()
 
     # ---------- 4. 保存 ----------

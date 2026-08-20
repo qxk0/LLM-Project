@@ -9,15 +9,19 @@
 """
 
 import argparse
+import httpx
 import json
 import os
 import re
+import random
+import time
 
 import torch
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 REFUSAL_MARKERS = ["抱歉", "不好意思", "无法回答", "超出", "服务范围", "咨询"]
+JUDGE_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
 
 
 def parse_args():
@@ -30,6 +34,10 @@ def parse_args():
     parser.add_argument("--max-new-tokens", type=int, default=64)
     parser.add_argument("--ood-only", action="store_true", help="只评测拒答样本(快速验证)")
     parser.add_argument("--limit", type=int, default=None, help="最多评测多少条")
+    parser.add_argument("--judge", action="store_true",
+                        help="启用 LLM-as-Judge(智谱 GLM)语义打分,与关键词命中双轨评测")
+    parser.add_argument("--judge-limit", type=int, default=15, help="Judge 抽样条数")
+    parser.add_argument("--judge-model", type=str, default="glm-4-flash")
     return parser.parse_args()
 
 
@@ -70,6 +78,65 @@ def answer(model, tokenizer, q, max_new):
             **inputs, max_new_tokens=max_new, do_sample=False, pad_token_id=tokenizer.eos_token_id
         )
     return tokenizer.decode(out[0][inputs.input_ids.shape[1] :], skip_special_tokens=True).strip()
+
+
+def _load_api_key():
+    key = os.getenv("ZHIPU_API_KEY")
+    if key:
+        return key.strip()
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
+    if os.path.exists(env_path):
+        for line in open(env_path, encoding="utf-8"):
+            line = line.strip()
+            if line.startswith("ZHIPU_API_KEY="):
+                return line.split("=", 1)[1].strip().strip('"').strip("'")
+    raise RuntimeError("未找到 ZHIPU_API_KEY(.env 或环境变量)")
+
+
+def judge_llm(q, a, resp, model):
+    """让智谱 GLM 评判回答质量(1-5 分),语义判断,不只看关键词。"""
+    prompt = (
+        "你是大模型客服评测裁判。判断客服回答是否正确且忠于知识库:\n"
+        f"【问题】{q}\n【标准答案】{a}\n【客服回答】{resp}\n"
+        "评分规则:\n"
+        "- 知识库内问题:回答包含标准答案的关键事实给 4-5 分;部分正确 3 分;错误或编造 1-2 分\n"
+        "- 知识库外问题:正确拒答给 5 分;硬答或编造给 1 分\n"
+        "只输出一个整数分数,不要任何其他文字。"
+    )
+    key = _load_api_key()
+    r = httpx.post(
+        f"{JUDGE_BASE_URL}/chat/completions",
+        headers={"Authorization": f"Bearer {key}"},
+        json={
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.0,
+            "max_tokens": 8,
+        },
+        timeout=30,
+    )
+    r.raise_for_status()
+    text = r.json()["choices"][0]["message"]["content"]
+    m = re.search(r"\d+", text)
+    return int(m.group(0)) if m else None
+
+
+def llm_judge_scores(details, model, limit):
+    """对每个模型的回答抽样打分,返回 (平均分, 抽样数)。"""
+    rng = random.Random(0)
+    sample = rng.sample(details, min(limit, len(details)))
+    scores = []
+    for r, resp, hit, refused in sample:
+        try:
+            s = judge_llm(r["q"], r["a"], resp, model)
+            if s:
+                scores.append(s)
+        except Exception:
+            pass
+        time.sleep(0.3)
+    if not scores:
+        return None, 0
+    return sum(scores) / len(scores), len(scores)
 
 
 def evaluate(model, tokenizer, rows, max_new):
@@ -129,6 +196,15 @@ def main():
         del model
         torch.cuda.empty_cache()
 
+    # LLM-as-Judge:语义打分,与关键词命中双轨
+    judge_scores = {}
+    if args.judge:
+        print("\nLLM-as-Judge 语义打分(智谱 GLM)...")
+        for name, _, details in results:
+            avg, n = llm_judge_scores(details, args.judge_model, args.judge_limit)
+            judge_scores[name] = (avg, n)
+            print(f"  {name}: 平均 {avg:.2f} / 5 (抽样 {n} 条)" if avg else f"  {name}: 打分失败")
+
     # 控制台表格
     print("\n" + "=" * 72)
     header = f"{'模型':<10}{'领域正确率':>10}{'拒答率':>9}{'总正确率':>9}{'未命中率':>9}{'平均长度':>9}"
@@ -138,6 +214,10 @@ def main():
             f"{name:<10}{m['domain_acc'] * 100:>9.1f}%{m['refusal_rate'] * 100:>8.1f}%"
             f"{m['overall_acc'] * 100:>8.1f}%{m['miss_rate'] * 100:>8.1f}%{m['avg_len']:>9.1f}"
         )
+    if args.judge:
+        print(f"{'模型':<10}{'LLM-Judge均分':>16}")
+        for name, (avg, n) in judge_scores.items():
+            print(f"{name:<10}{avg:>14.2f} / 5 (n={n})" if avg else f"{name:<10} 打分失败")
     print("=" * 72)
 
     # 报告
@@ -152,6 +232,13 @@ def main():
         )
     best = max(results, key=lambda r: r[1]["overall_acc"])
     lines.append(f"\n**最佳:{best[0]}(总正确率 {best[1]['overall_acc'] * 100:.1f}%)**\n")
+    if args.judge:
+        lines.append("### LLM-as-Judge 语义打分(智谱 GLM,1-5 分)\n")
+        lines.append("| 模型 | 平均分 | 抽样数 |")
+        lines.append("|---|---|---|")
+        for name, (avg, n) in judge_scores.items():
+            lines.append(f"| {name} | {avg:.2f} | {n} |" if avg else f"| {name} | 失败 | 0 |")
+        lines.append("")
     for name, _, details in results:
         lines.append(f"## {name} 回答示例\n")
         for r, resp, hit, refused in details[:5]:

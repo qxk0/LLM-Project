@@ -35,6 +35,8 @@ def parse_args():
     parser.add_argument("--dataset", type=str, default="shibing624/alpaca-zh")
     parser.add_argument("--data-file", type=str, default=None,
                         help="本地 JSONL 数据(数据管道产物),格式:{q,a,keywords,ood}")
+    parser.add_argument("--mix-general", type=float, default=0.2,
+                        help="混合通用指令数据比例(相对领域数据),防止领域过拟合、保持通用对话能力")
     parser.add_argument("--max-examples", type=int, default=2000, help="取多少条训练样本")
     parser.add_argument("--max-steps", type=int, default=300, help="训练步数")
     parser.add_argument("--batch-size", type=int, default=1, help="每设备 batch(4GB 显存用 1)")
@@ -134,6 +136,18 @@ def main():
         raw = load_dataset(args.dataset, split="train")
         n = min(args.max_examples, len(raw))
         data = raw.select(range(n)).map(format_example)
+    # 领域数据 + 通用数据混合:先训得稳,再在领域上收敛
+    if args.data_file and args.mix_general > 0:
+        try:
+            general_raw = load_dataset("shibing624/alpaca-zh", split="train")
+            m = min(int(n * args.mix_general), len(general_raw))
+            general = general_raw.select(range(m)).map(format_example)
+            from datasets import concatenate_datasets
+            data = concatenate_datasets([data, general])
+            n = len(data)
+            print(f"混合通用指令数据 {m} 条,总样本 {len(data)} 条(通用占比 {m / len(data):.0%})")
+        except Exception as e:
+            print(f"[警告] 通用数据混合失败,仅用领域数据:{e}")
     print(f"使用 {n} 条指令样本")
 
     def tokenize_fn(ex):
