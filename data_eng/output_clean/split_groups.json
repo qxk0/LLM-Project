@@ -1,0 +1,1298 @@
+[
+  {
+    "group_id": "grp_f6c7874c6c32",
+    "size": 390,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": "product::杨枝甘露",
+    "n_families": 24
+  },
+  {
+    "group_id": "grp_e0f51d6315bb",
+    "size": 348,
+    "clean": false,
+    "split": "train",
+    "intent_main": "recommend",
+    "entity_main": "product::茉莉绿茶",
+    "n_families": 50
+  },
+  {
+    "group_id": "grp_57a7676255f7",
+    "size": 238,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": "product::茉莉绿茶",
+    "n_families": 15
+  },
+  {
+    "group_id": "grp_2344b09fe198",
+    "size": 187,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": "product::焦糖布丁奶茶",
+    "n_families": 9
+  },
+  {
+    "group_id": "grp_8578bfa29f8e",
+    "size": 186,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": "product::柠檬气泡水",
+    "n_families": 9
+  },
+  {
+    "group_id": "grp_dca991269c60",
+    "size": 184,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": "product::芝士奶盖四季春",
+    "n_families": 9
+  },
+  {
+    "group_id": "grp_3a04aea53105",
+    "size": 182,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": "product::黑糖珍珠鲜奶",
+    "n_families": 9
+  },
+  {
+    "group_id": "grp_1ee5f2efba7f",
+    "size": 177,
+    "clean": false,
+    "split": "train",
+    "intent_main": "recommend",
+    "entity_main": "product::芋泥波波鲜奶",
+    "n_families": 20
+  },
+  {
+    "group_id": "grp_27b5d1a1dcc5",
+    "size": 177,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": "product::芋泥波波鲜奶",
+    "n_families": 9
+  },
+  {
+    "group_id": "grp_242c86d85152",
+    "size": 109,
+    "clean": false,
+    "split": "train",
+    "intent_main": "recommend",
+    "entity_main": "product::杨枝甘露",
+    "n_families": 14
+  },
+  {
+    "group_id": "grp_972f2283a345",
+    "size": 95,
+    "clean": false,
+    "split": "train",
+    "intent_main": "recommend",
+    "entity_main": "product::柠檬气泡水",
+    "n_families": 12
+  },
+  {
+    "group_id": "grp_19906efa4896",
+    "size": 80,
+    "clean": false,
+    "split": "train",
+    "intent_main": "recommend",
+    "entity_main": "product::焦糖布丁奶茶",
+    "n_families": 12
+  },
+  {
+    "group_id": "grp_1e34ec5a353f",
+    "size": 58,
+    "clean": false,
+    "split": "train",
+    "intent_main": "customize",
+    "entity_main": "product::经典珍珠奶茶",
+    "n_families": 14
+  },
+  {
+    "group_id": "grp_b19a152b8f1c",
+    "size": 27,
+    "clean": false,
+    "split": "train",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::修手机",
+    "n_families": 7
+  },
+  {
+    "group_id": "grp_5f55b54f9aa4",
+    "size": 25,
+    "clean": true,
+    "split": "test",
+    "intent_main": "customize",
+    "entity_main": "product::芝士奶盖四季春",
+    "n_families": 5
+  },
+  {
+    "group_id": "grp_90d55e6c56eb",
+    "size": 25,
+    "clean": true,
+    "split": "val",
+    "intent_main": "customize",
+    "entity_main": "product::黑糖珍珠鲜奶",
+    "n_families": 5
+  },
+  {
+    "group_id": "grp_ece27f576798",
+    "size": 19,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": "topping::芋泥",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_3921d6de5fd4",
+    "size": 16,
+    "clean": false,
+    "split": "train",
+    "intent_main": "allergen",
+    "entity_main": "product::杨枝甘露",
+    "n_families": 8
+  },
+  {
+    "group_id": "grp_ecda16b11817",
+    "size": 16,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": "topping::奶盖",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_2ecca29d76f0",
+    "size": 15,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": "topping::椰果",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_006e6740e1c9",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "customize",
+    "entity_main": "seed::seed_020",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_07562daa212e",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "member",
+    "entity_main": "seed::seed_037",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_0b1ac6bbf50f",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "after_sale",
+    "entity_main": "seed::seed_040",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_42ca7f74bb87",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "store",
+    "entity_main": "seed::seed_047",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_478dd7f2a1f6",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "after_sale",
+    "entity_main": "seed::seed_038",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_556614b5c3fb",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "hours",
+    "entity_main": "seed::seed_027",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_5c633a983c4b",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "hours",
+    "entity_main": "seed::seed_025",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_622800846679",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "hours",
+    "entity_main": "seed::seed_028",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_6bfc95a60d2a",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "member",
+    "entity_main": "seed::seed_035",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_765d24b2d9fc",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "customize",
+    "entity_main": "seed::seed_022",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_7fd5155bbe5c",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": "topping::布丁",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_995c710a5fc4",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "delivery",
+    "entity_main": "seed::seed_029",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_c22727aad1f2",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "delivery",
+    "entity_main": "seed::seed_032",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_c3261dda0252",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "store",
+    "entity_main": "seed::seed_045",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_dd9a6b9eb140",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "allergen",
+    "entity_main": "product::黑糖珍珠鲜奶",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_dfd71f17552b",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "member",
+    "entity_main": "seed::seed_033",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_edf9379ba45a",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "delivery",
+    "entity_main": "seed::seed_031",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_f8819508fa21",
+    "size": 8,
+    "clean": false,
+    "split": "train",
+    "intent_main": "after_sale",
+    "entity_main": "seed::seed_039",
+    "n_families": 4
+  },
+  {
+    "group_id": "grp_0ddd4f521e3d",
+    "size": 7,
+    "clean": false,
+    "split": "train",
+    "intent_main": "store",
+    "entity_main": "seed::seed_046",
+    "n_families": 3
+  },
+  {
+    "group_id": "grp_66bf4ebd7ba4",
+    "size": 7,
+    "clean": false,
+    "split": "train",
+    "intent_main": "ood",
+    "entity_main": "seed::seed_049",
+    "n_families": 3
+  },
+  {
+    "group_id": "grp_67c978a74d0d",
+    "size": 7,
+    "clean": false,
+    "split": "train",
+    "intent_main": "ood",
+    "entity_main": "seed::seed_053",
+    "n_families": 3
+  },
+  {
+    "group_id": "grp_a845cc6807c9",
+    "size": 7,
+    "clean": false,
+    "split": "train",
+    "intent_main": "price",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_028de4ac9424",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::寄快递",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_0754f735b864",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "member",
+    "entity_main": "seed::seed_036",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_24d57127200c",
+    "size": 5,
+    "clean": true,
+    "split": "val",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::打疫苗",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_27f68fbf0796",
+    "size": 5,
+    "clean": true,
+    "split": "val",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::配钥匙",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_2b8aa381fbd8",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::办签证",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_2dedf2481069",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "hours",
+    "entity_main": "seed::seed_026",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_38902920dfe1",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": "seed::seed_051",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_3abb9437d48a",
+    "size": 5,
+    "clean": true,
+    "split": "val",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::卖二手车",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_44d04e94fd8d",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "store",
+    "entity_main": "seed::seed_044",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_4b6ef7e04031",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::装系统",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_6b8b1cde316c",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::报培训班",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_80bdc13c075a",
+    "size": 5,
+    "clean": true,
+    "split": "val",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::代开发票",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_83e040b1b188",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "customize",
+    "entity_main": "topping::奶盖",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_8d4df9679f25",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "member",
+    "entity_main": "seed::seed_034",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_8d925e4cc7cc",
+    "size": 5,
+    "clean": true,
+    "split": "val",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::退机票",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_93a3650e67d0",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::开锁",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_99ef32cbfecb",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::考驾照",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_a4573a7b8b34",
+    "size": 5,
+    "clean": true,
+    "split": "val",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::搬家",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_aa4bb15b1aa9",
+    "size": 5,
+    "clean": true,
+    "split": "val",
+    "intent_main": "customize",
+    "entity_main": "seed::seed_021",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_bc52dc5c840a",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::查违章",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_c68241b947d5",
+    "size": 5,
+    "clean": true,
+    "split": "val",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::订酒店",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_e74442c07160",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "delivery",
+    "entity_main": "seed::seed_030",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_ed4963ce2fa1",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": "seed::seed_052",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_f8c88a695026",
+    "size": 5,
+    "clean": true,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": "ood_topic::缴水电费",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_031e27157970",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_032aa521d1f8",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::经典珍珠奶茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_04aeff7c03cb",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "store",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_083373e96aa1",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "delivery",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_0ae54846b2a0",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": "product::杨枝甘露",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_0c4c90716e01",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_0f44d810ea99",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::茉莉绿茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_108f6e24ae71",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_138bec51e8bf",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "after_sale",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_141478d25773",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::经典珍珠奶茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_14f60f5cefa0",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "after_sale",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_24482ceab777",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "allergen",
+    "entity_main": "product::芋泥波波鲜奶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_24d6c2d8fef9",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_2656f8ad51ef",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": "product::茉莉绿茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_29340c35fc37",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_296a84ff6ea1",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": "product::经典珍珠奶茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_2b5117fe0865",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "hours",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_2c180c106472",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::经典珍珠奶茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_30df72ddc2ce",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "after_sale",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_32c562be7f44",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_3a1ab45e454d",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "allergen",
+    "entity_main": "product::杨枝甘露",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_43fe1f23cef0",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "member",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_494502ef8055",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "hours",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_50638c5e19d7",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_51082a1e224b",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_51a20ba49f67",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": "product::杨枝甘露",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_52e40f472101",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": "product::茉莉绿茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_542095a91420",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "hours",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_57269806c49b",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "after_sale",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_5a4acf1eee40",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": "product::茉莉绿茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_5bef3504242f",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "after_sale",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_60a148948a16",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": "topping::珍珠",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_60cad335fd92",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": "product::芝士奶盖四季春",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_61f6415cf03f",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::茉莉绿茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_6334220ef0aa",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "allergen",
+    "entity_main": "product::芝士奶盖四季春",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_67dbfd7a9dbd",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "allergen",
+    "entity_main": "product::芋泥波波鲜奶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_6e9215120cc6",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "hours",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_6eef3e783d67",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "after_sale",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_77346904d518",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "delivery",
+    "entity_main": "product::茉莉绿茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_845eba8a8c5f",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "hours",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_852281e4d7f1",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "member",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_85bf1d5453f0",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "allergen",
+    "entity_main": "product::芝士奶盖四季春",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_8c1356a7bd97",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "hours",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_90db9831d7ae",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": "product::杨枝甘露",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_9199ff783b27",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::芝士奶盖四季春",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_934cb225784c",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_a3155c16314a",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "delivery",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_a513b7cf04ec",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "allergen",
+    "entity_main": "product::黑糖珍珠鲜奶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_a741f897cad6",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "delivery",
+    "entity_main": "product::杨枝甘露",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_a80bf0eab202",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "after_sale",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_aab118c6e26f",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "member",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_ab32866533c4",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "delivery",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_ad6c583b0f63",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "after_sale",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_b047266e63c6",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "allergen",
+    "entity_main": "product::芝士奶盖四季春",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_b0cc26e7fd5b",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "store",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_b7952228a54e",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "allergen",
+    "entity_main": "product::芝士奶盖四季春",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_c045eef252d6",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_c5a8fdb6e7c9",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "hours",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_c7375fbe6d21",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_c7b36e0f0a2b",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "store",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_c837ccc0fca2",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "after_sale",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_c83a1496b45d",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "store",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_c8c8440598ee",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::杨枝甘露",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_d61ba8630bdb",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "delivery",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_e51456bcc1e9",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "ood",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_e68ab73f33d5",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::经典珍珠奶茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_ea2a076543bc",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "hours",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_ec9bf5683ddf",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "allergen",
+    "entity_main": "product::经典珍珠奶茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_ef04d0bbb2d4",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "member",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_f03ef27b4ac9",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::经典珍珠奶茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_f06ca7118601",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "price",
+    "entity_main": "product::经典珍珠奶茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_f1e190d4b31e",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::杨枝甘露",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_f2ce5116bb3b",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::茉莉绿茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_f3800fe220ef",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "recommend",
+    "entity_main": "product::经典珍珠奶茶",
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_f5f242718706",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "after_sale",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_f76396e13b02",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "member",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_f9ccd89d3585",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "store",
+    "entity_main": null,
+    "n_families": 1
+  },
+  {
+    "group_id": "grp_fdcd2eb5b07f",
+    "size": 1,
+    "clean": false,
+    "split": "test",
+    "intent_main": "allergen",
+    "entity_main": "product::黑糖珍珠鲜奶",
+    "n_families": 1
+  }
+]

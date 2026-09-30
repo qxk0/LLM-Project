@@ -1,0 +1,104 @@
+{
+  "summary": {
+    "base/chat": {
+      "accuracy": 0.0,
+      "domain_accuracy": 0.0,
+      "ood_refusal": 0.0,
+      "eos_hit": 0.0,
+      "avg_tokens": 32,
+      "avg_seconds": 2.3426,
+      "keyword_hit_rate": 0.0
+    },
+    "base/raw": {
+      "accuracy": 0.0,
+      "domain_accuracy": 0.0,
+      "ood_refusal": 0.0,
+      "eos_hit": 0.0,
+      "avg_tokens": 32,
+      "avg_seconds": 2.3016,
+      "keyword_hit_rate": 0.0
+    },
+    "sft/chat": {
+      "accuracy": 0.4,
+      "domain_accuracy": 0.5,
+      "ood_refusal": 0.0,
+      "eos_hit": 0.0,
+      "avg_tokens": 32,
+      "avg_seconds": 4.5862,
+      "keyword_hit_rate": 0.4
+    },
+    "sft/raw": {
+      "accuracy": 0.2,
+      "domain_accuracy": 0.25,
+      "ood_refusal": 0.0,
+      "eos_hit": 0.0,
+      "avg_tokens": 32,
+      "avg_seconds": 4.5972,
+      "keyword_hit_rate": 0.2
+    },
+    "dpo/chat": {
+      "accuracy": 0.6,
+      "domain_accuracy": 0.5,
+      "ood_refusal": 1.0,
+      "eos_hit": 0.0,
+      "avg_tokens": 32,
+      "avg_seconds": 4.4188,
+      "keyword_hit_rate": 0.6
+    },
+    "dpo/raw": {
+      "accuracy": 0.6,
+      "domain_accuracy": 0.5,
+      "ood_refusal": 1.0,
+      "eos_hit": 0.4,
+      "avg_tokens": 28.4,
+      "avg_seconds": 4.0402,
+      "keyword_hit_rate": 0.6
+    },
+    "rl/chat": {
+      "accuracy": 0.6,
+      "domain_accuracy": 0.5,
+      "ood_refusal": 1.0,
+      "eos_hit": 0.0,
+      "avg_tokens": 32,
+      "avg_seconds": 4.662,
+      "keyword_hit_rate": 0.4
+    },
+    "rl/raw": {
+      "accuracy": 0.8,
+      "domain_accuracy": 0.75,
+      "ood_refusal": 1.0,
+      "eos_hit": 0.0,
+      "avg_tokens": 32,
+      "avg_seconds": 4.601,
+      "keyword_hit_rate": 0.6
+    }
+  },
+  "gpu_mem_mb": {},
+  "stop_ids": [
+    151643,
+    151645
+  ],
+  "max_new_tokens": 32,
+  "questions": [
+    {
+      "intent": "price",
+      "q": "一杯芝士奶盖四季春加上 3 元配送费,一共多少钱?"
+    },
+    {
+      "intent": "recommend",
+      "q": "想给同事带 4 杯不重样的饮品,有什么搭配建议?"
+    },
+    {
+      "intent": "customize",
+      "q": "请问芝士奶盖四季春可以做热的吗?"
+    },
+    {
+      "intent": "hours",
+      "q": "外卖的结束时间和门店关门时间一样吗?"
+    },
+    {
+      "intent": "ood",
+      "q": "请问附近哪里可以租房?"
+    }
+  ]
+}

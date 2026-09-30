@@ -1,0 +1,133 @@
+�̶� 5 ��(price/recommend/customize/hours/ood):
+  1. [price] ood=False һ��֥ʿ�̸��ļ������� 3 Ԫ���ͷ�,һ������Ǯ?
+  2. [recommend] ood=False ���ͬ�´� 4 ������������Ʒ,��ʲô���佨��?
+  3. [customize] ood=False ����֥ʿ�̸��ļ����������ȵ���?
+  4. [hours] ood=False �����Ľ���ʱ����ŵ����ʱ��һ����?
+  5. [ood] ood=True ���ʸ�����������ⷿ?
+stop_ids = [151643, 151645] | max_new_tokens = 32 | do_sample=False | num_beams=1(HF Ĭ��,�� beam search)
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:00<00:32,  8.84it/s]
+Loading weights:   6%|��         | 17/290 [00:00<00:02, 91.13it/s]
+Loading weights:  26%|������       | 76/290 [00:00<00:00, 302.36it/s]
+Loading weights:  44%|����������     | 129/290 [00:00<00:00, 388.34it/s]
+Loading weights:  62%|��������������   | 179/290 [00:00<00:00, 425.75it/s]
+Loading weights:  78%|����������������  | 227/290 [00:00<00:00, 439.59it/s]
+Loading weights:  94%|��������������������| 272/290 [00:00<00:00, 431.92it/s]
+Loading weights: 100%|��������������������| 290/290 [00:00<00:00, 379.03it/s]
+
+
+=== base / chat ===
+  [0] price       2.65s tok=32 eos=False hit=False refused=False
+  [1] recommend   2.21s tok=32 eos=False hit=False refused=False
+  [2] customize   2.28s tok=32 eos=False hit=False refused=False
+  [3] hours       2.22s tok=32 eos=False hit=False refused=False
+  [4] ood         2.35s tok=32 eos=False hit=False refused=False
+  -> �ѱ��� data_eng/output_clean/prompt_ablation\base_chat.jsonl
+
+=== base / raw ===
+  [0] price       2.32s tok=32 eos=False hit=False refused=False
+  [1] recommend   2.24s tok=32 eos=False hit=False refused=False
+  [2] customize   2.23s tok=32 eos=False hit=False refused=False
+  [3] hours       2.33s tok=32 eos=False hit=False refused=False
+  [4] ood         2.39s tok=32 eos=False hit=False refused=False
+  -> �ѱ��� data_eng/output_clean/prompt_ablation\base_raw.jsonl
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:00<00:33,  8.54it/s]
+Loading weights:  18%|����        | 51/290 [00:00<00:00, 278.52it/s]
+Loading weights:  34%|��������      | 100/290 [00:00<00:00, 368.24it/s]
+Loading weights:  55%|������������    | 159/290 [00:00<00:00, 447.06it/s]
+Loading weights:  71%|����������������  | 207/290 [00:00<00:00, 452.38it/s]
+Loading weights:  89%|������������������ | 257/290 [00:00<00:00, 462.26it/s]
+Loading weights: 100%|��������������������| 290/290 [00:00<00:00, 421.47it/s]
+
+
+=== sft / chat ===
+  [0] price       4.70s tok=32 eos=False hit=True refused=False
+  [1] recommend   4.46s tok=32 eos=False hit=False refused=False
+  [2] customize   4.59s tok=32 eos=False hit=True refused=False
+  [3] hours       4.55s tok=32 eos=False hit=False refused=False
+  [4] ood         4.64s tok=32 eos=False hit=False refused=False
+  -> �ѱ��� data_eng/output_clean/prompt_ablation\sft_chat.jsonl
+
+=== sft / raw ===
+  [0] price       4.52s tok=32 eos=False hit=True refused=False
+  [1] recommend   4.56s tok=32 eos=False hit=False refused=False
+  [2] customize   4.54s tok=32 eos=False hit=False refused=False
+  [3] hours       4.69s tok=32 eos=False hit=False refused=False
+  [4] ood         4.68s tok=32 eos=False hit=False refused=False
+  -> �ѱ��� data_eng/output_clean/prompt_ablation\sft_raw.jsonl
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:00<00:32,  8.80it/s]
+Loading weights:  18%|����        | 51/290 [00:00<00:00, 276.10it/s]
+Loading weights:  35%|��������      | 101/290 [00:00<00:00, 373.48it/s]
+Loading weights:  53%|������������    | 153/290 [00:00<00:00, 426.76it/s]
+Loading weights:  72%|����������������  | 208/290 [00:00<00:00, 465.44it/s]
+Loading weights:  90%|������������������ | 260/290 [00:00<00:00, 483.23it/s]
+Loading weights: 100%|��������������������| 290/290 [00:00<00:00, 418.47it/s]
+
+=== dpo / chat ===
+  [0] price       4.50s tok=32 eos=False hit=False refused=False
+  [1] recommend   4.43s tok=32 eos=False hit=False refused=False
+  [2] customize   4.49s tok=32 eos=False hit=True refused=False
+  [3] hours       4.36s tok=32 eos=False hit=True refused=False
+  [4] ood         4.32s tok=32 eos=False hit=True refused=True
+  -> �ѱ��� data_eng/output_clean/prompt_ablation\dpo_chat.jsonl
+
+=== dpo / raw ===
+  [0] price       3.48s tok=24 eos=True hit=False refused=False
+  [1] recommend   4.41s tok=32 eos=False hit=False refused=False
+  [2] customize   2.97s tok=22 eos=True hit=True refused=False
+  [3] hours       4.71s tok=32 eos=False hit=True refused=False
+  [4] ood         4.63s tok=32 eos=False hit=True refused=True
+  -> �ѱ��� data_eng/output_clean/prompt_ablation\dpo_raw.jsonl
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:00<00:33,  8.63it/s]
+Loading weights:  18%|����        | 52/290 [00:00<00:00, 277.76it/s]
+Loading weights:  34%|��������      | 100/290 [00:00<00:00, 361.23it/s]
+Loading weights:  54%|������������    | 157/290 [00:00<00:00, 439.83it/s]
+Loading weights:  72%|����������������  | 208/290 [00:00<00:00, 464.16it/s]
+Loading weights:  91%|��������������������| 265/290 [00:00<00:00, 493.87it/s]
+Loading weights: 100%|��������������������| 290/290 [00:00<00:00, 429.00it/s]
+
+Traceback (most recent call last):
+=== rl / chat ===
+  [0] price       4.79s tok=32 eos=False hit=True refused=False
+  [1] recommend   4.52s tok=32 eos=False hit=False refused=False
+  [2] customize   4.69s tok=32 eos=False hit=True refused=False
+  [3] hours       4.71s tok=32 eos=False hit=False refused=False
+  [4] ood         4.60s tok=32 eos=False hit=False refused=True
+  -> �ѱ��� data_eng/output_clean/prompt_ablation\rl_chat.jsonl
+
+=== rl / raw ===
+  [0] price       4.67s tok=32 eos=False hit=True refused=False
+  [1] recommend   4.49s tok=32 eos=False hit=False refused=False
+  [2] customize   4.66s tok=32 eos=False hit=True refused=False
+  File "D:\LLM-Project\sft\prompt_ablation.py", line 212, in <module>
+  [3] hours       4.58s tok=32 eos=False hit=True refused=False
+  [4] ood         4.60s tok=32 eos=False hit=False refused=True
+  -> �ѱ��� data_eng/output_clean/prompt_ablation\rl_raw.jsonl
+
+================================================================================
+model  format   accuracy  domainAcc  OOD refuse  EOS hit  avg tok  avg sec
+--------------------------------------------------------------------------------
+base   chat           0%         0%          0%       0%     32.0     2.34
+base   raw            0%         0%          0%       0%     32.0     2.30
+sft    chat          40%        50%          0%       0%     32.0     4.59
+sft    raw           20%        25%          0%       0%     32.0     4.60
+dpo    chat          60%        50%        100%       0%     32.0     4.42
+dpo    raw           60%        50%        100%      40%     28.4     4.04
+rl     chat          60%        50%        100%       0%     32.0     4.66
+rl     raw           80%        75%        100%       0%     32.0     4.60
+================================================================================
+
+����Ԥ�����(ͬһ���±Ƚ� chat/raw):
+
+--- [0] intent=price ood=False | Q: һ��֥ʿ�̸��ļ������� 3 Ԫ���ͷ�,һ������Ǯ?
+    gold: ֥ʿ�̸��ļ��� 16 Ԫһ��,�� 3 Ԫ���ͷ�һ�� 19 Ԫ��
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\LLM-Project\sft\prompt_ablation.py", line 160, in main
+    print(f"    {model_name:<5}/{fmt:<4} [{flag}] eos={int(rec['hit_eos'])} "
+UnicodeEncodeError: 'gbk' codec can't encode character '\ufffd' in position 85: illegal multibyte sequence

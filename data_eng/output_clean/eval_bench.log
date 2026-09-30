@@ -1,0 +1,107 @@
+cuda available: True | device count: 1
+device: NVIDIA GeForce RTX 3050 Laptop GPU
+bf16 supported: True
+benchmark ����: 5 / �� 183
+  [149] intent=price ood=False q=һ��֥ʿ�̸��ļ������� 3 Ԫ���ͷ�,һ������Ǯ?
+  [161] intent=recommend ood=False q=���ͬ�´� 4 ������������Ʒ,��ʲô���佨��?
+  [20] intent=customize ood=False q=����֥ʿ�̸��ļ����������ȵ���?
+  [61] intent=hours ood=False q=�����Ľ���ʱ����ŵ����ʱ��һ����?
+  [89] intent=ood ood=True q=���ʸ�����������ⷿ?
+
+=== base ===
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:00<00:40,  7.21it/s]
+Loading weights:   7%|��         | 21/290 [00:00<00:02, 104.13it/s]
+Loading weights:  22%|������       | 65/290 [00:00<00:00, 240.71it/s]
+Loading weights:  39%|��������      | 112/290 [00:00<00:00, 318.96it/s]
+Loading weights:  56%|������������    | 161/290 [00:00<00:00, 375.15it/s]
+Loading weights:  72%|����������������  | 210/290 [00:00<00:00, 412.35it/s]
+Loading weights:  89%|������������������ | 257/290 [00:00<00:00, 429.92it/s]
+Loading weights: 100%|��������������������| 290/290 [00:00<00:00, 359.48it/s]
+  ģ��+adapter ����: 1.34s | GPU {'allocated': 436.3, 'reserved': 458.0, 'max_allocated': 444.2}
+  warmup: 3.86s, 64 tokens
+  [149] price         3.45s  new_tokens= 64  eos=False
+  [161] recommend     3.29s  new_tokens= 64  eos=False
+  [20] customize     3.33s  new_tokens= 64  eos=False
+  [61] hours         3.23s  new_tokens= 64  eos=False
+  [89] ood           3.27s  new_tokens= 64  eos=False
+
+=== sft ===
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   1%|          | 2/290 [00:00<00:14, 19.83it/s]
+Loading weights:  21%|����        | 61/290 [00:00<00:00, 352.24it/s]
+Loading weights:  40%|��������      | 117/290 [00:00<00:00, 445.93it/s]
+Loading weights:  62%|��������������   | 179/290 [00:00<00:00, 513.66it/s]
+Loading weights:  80%|����������������  | 232/290 [00:00<00:00, 512.31it/s]
+Loading weights: 100%|��������������������| 290/290 [00:00<00:00, 487.71it/s]
+  ģ��+adapter ����: 1.29s | GPU {'allocated': 654.7, 'reserved': 712.0, 'max_allocated': 688.3}
+  warmup: 6.27s, 64 tokens
+  [149] price         6.09s  new_tokens= 64  eos=False
+  [161] recommend     6.37s  new_tokens= 64  eos=False
+  [20] customize     6.65s  new_tokens= 64  eos=False
+  [61] hours         6.19s  new_tokens= 64  eos=False
+  [89] ood           6.06s  new_tokens= 64  eos=False
+
+=== dpo ===
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   1%|          | 3/290 [00:00<00:10, 28.68it/s]
+Loading weights:  22%|������       | 64/290 [00:00<00:00, 357.68it/s]
+Loading weights:  43%|����������     | 125/290 [00:00<00:00, 463.32it/s]
+Loading weights:  63%|��������������   | 183/290 [00:00<00:00, 496.16it/s]
+Loading weights:  80%|����������������  | 233/290 [00:00<00:00, 496.30it/s]
+Loading weights: 100%|��������������������| 290/290 [00:00<00:00, 474.50it/s]
+
+  ģ��+adapter ����: 1.31s | GPU {'allocated': 831.2, 'reserved': 900.0, 'max_allocated': 864.8}
+  warmup: 2.19s, 24 tokens
+  [149] price         2.23s  new_tokens= 24  eos=True
+  [161] recommend     5.82s  new_tokens= 64  eos=False
+  [20] customize     2.09s  new_tokens= 22  eos=True
+  [61] hours         5.83s  new_tokens= 64  eos=False
+  [89] ood           6.09s  new_tokens= 64  eos=False
+
+=== rl ===
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   0%|          | 1/290 [00:00<00:32,  8.94it/s]
+Loading weights:  22%|������       | 64/290 [00:00<00:00, 352.44it/s]
+Loading weights:  44%|����������     | 128/290 [00:00<00:00, 477.34it/s]
+Loading weights:  67%|��������������   | 195/290 [00:00<00:00, 551.64it/s]
+Loading weights:  88%|������������������ | 256/290 [00:00<00:00, 563.79it/s]
+Loading weights: 100%|��������������������| 290/290 [00:00<00:00, 496.82it/s]
+
+  ģ��+adapter ����: 1.37s | GPU {'allocated': 478.2, 'reserved': 846.0, 'max_allocated': 537.9}
+  warmup: 6.07s, 64 tokens
+  [149] price         6.01s  new_tokens= 64  eos=False
+  [161] recommend     6.02s  new_tokens= 64  eos=False
+  [20] customize     6.21s  new_tokens= 64  eos=False
+  [61] hours         5.90s  new_tokens= 64  eos=False
+  [89] ood           6.18s  new_tokens= 64  eos=False
+
+=== token ����ɨ��(sft,ͬһ��)===
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]
+Loading weights:   1%|          | 3/290 [00:00<00:09, 29.12it/s]
+Loading weights:  22%|������       | 64/290 [00:00<00:00, 362.78it/s]
+Loading weights:  43%|����������     | 125/290 [00:00<00:00, 473.48it/s]
+Loading weights:  67%|��������������   | 195/290 [00:00<00:00, 555.09it/s]
+Loading weights:  89%|������������������ | 257/290 [00:00<00:00, 574.58it/s]
+Loading weights: 100%|��������������������| 290/290 [00:00<00:00, 522.88it/s]
+  max_new_tokens=  8 -> 0.747s (8 tokens)
+  max_new_tokens= 32 -> 2.901s (32 tokens)
+  max_new_tokens= 64 -> 5.834s (64 tokens)
+
+benchmark ����ѱ���: data_eng/output_clean/eval_bench.json
+
+| model | load(s) | n | s/question | tokens | tok/s | mean_new_tok | EOS hit |
+|---|---|---|---|---|---|---|---|
+| base | 1.34 | 5 | 3.312 | 320 | 19.32 | 64 | 0.0 |
+| sft | 1.29 | 5 | 6.273 | 320 | 10.2 | 64 | 0.0 |
+| dpo | 1.31 | 5 | 4.411 | 238 | 10.79 | 47.6 | 0.4 |
+| rl | 1.37 | 5 | 6.064 | 320 | 10.55 | 64 | 0.0 |
+
+����(183 �� / ÿ��ģ��):
+  base: 607s = 10.1 min
+  sft: 1149s = 19.2 min
+  dpo: 809s = 13.5 min
+  rl: 1111s = 18.5 min

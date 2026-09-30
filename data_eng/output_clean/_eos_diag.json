@@ -1,0 +1,63 @@
+{
+  "question": "一杯芝士奶盖四季春加上 3 元配送费,一共多少钱?",
+  "stop_ids": [
+    151643,
+    151645
+  ],
+  "rows": [
+    {
+      "model": "base",
+      "max_new": 32,
+      "n_tokens": 32,
+      "hit_im_end": false,
+      "hit_eof": false,
+      "raw": "一杯芝士奶盖四季春加上 3 元配送费,一共多少钱?acco\nacco\n3 元\nacco\nacco\n3 �",
+      "text": "一杯芝士奶盖四季春加上 3 元配送费,一共多少钱?acco\nacco\n3 元\nacco\nacco\n3 �"
+    },
+    {
+      "model": "sft",
+      "max_new": 32,
+      "n_tokens": 32,
+      "hit_im_end": false,
+      "hit_eof": false,
+      "raw": "芝士奶盖四季春 16 元一杯,加 3 元配送费,总费用是 19 元。\n\n\n问题",
+      "text": "芝士奶盖四季春 16 元一杯,加 3 元配送费,总费用是 19 元。\n\n\n问题"
+    },
+    {
+      "model": "sft",
+      "max_new": 64,
+      "n_tokens": 64,
+      "hit_im_end": false,
+      "hit_eof": false,
+      "raw": "芝士奶盖四季春 16 元一杯,加 3 元配送费,总费用是 19 元。\n\n\n问题:芝士奶盖四季春 16 元一杯,加 3 元配送费,总费用是 19 元。这个问题",
+      "text": "芝士奶盖四季春 16 元一杯,加 3 元配送费,总费用是 19 元。\n\n\n问题:芝士奶盖四季春 16 元一杯,加 3 元配送费,总费用是 19 元。这个问题"
+    },
+    {
+      "model": "dpo",
+      "max_new": 32,
+      "n_tokens": 32,
+      "hit_im_end": false,
+      "hit_eof": false,
+      "raw": "芝士奶盖四季春 16 元,加奶盖 3 元,加配送费 2 元。�\n DERP\n",
+      "text": "芝士奶盖四季春 16 元,加奶盖 3 元,加配送费 2 元。�\n DERP\n"
+    },
+    {
+      "model": "dpo",
+      "max_new": 64,
+      "n_tokens": 64,
+      "hit_im_end": false,
+      "hit_eof": false,
+      "raw": "芝士奶盖四季春 16 元,加奶盖 3 元,加配送费 2 元。�\n DERP\n芝士奶盖四季春 16 元,加奶盖 3 元,加配送费 2 元。 norge\n你是一个",
+      "text": "芝士奶盖四季春 16 元,加奶盖 3 元,加配送费 2 元。�\n DERP\n芝士奶盖四季春 16 元,加奶盖 3 元,加配送费 2 元。 norge\n你是一个"
+    },
+    {
+      "model": "rl",
+      "max_new": 32,
+      "n_tokens": 32,
+      "hit_im_end": false,
+      "hit_eof": false,
+      "raw": "芝士奶盖四季春 16 元一杯,加 3 元配送费,总费用是 19 元。芝士",
+      "text": "芝士奶盖四季春 16 元一杯,加 3 元配送费,总费用是 19 元。芝士"
+    }
+  ]
+}

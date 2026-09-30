@@ -1,0 +1,299 @@
+{
+  "cuda": true,
+  "max_new_tokens": 32,
+  "models": {
+    "base": {
+      "adapter": null,
+      "load_seconds": 2.11,
+      "num_questions": 5,
+      "total_generation_seconds": 11.48,
+      "seconds_per_question": 2.297,
+      "tokens_generated": 160,
+      "tokens_per_second": 13.93,
+      "mean_new_tokens": 32,
+      "max_new_tokens_observed": 32,
+      "eos_hit_rate": 0.0,
+      "gpu_mem_mb": {
+        "allocated": 444.6,
+        "reserved": 460.0,
+        "max_allocated": 447.9
+      },
+      "samples": [
+        {
+          "seconds": 2.277,
+          "prompt_tokens": 37,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 149,
+          "intent": "price",
+          "ood": false,
+          "q": "一杯芝士奶盖四季春加上 3 元配送费,一共多少钱?"
+        },
+        {
+          "seconds": 2.202,
+          "prompt_tokens": 36,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 161,
+          "intent": "recommend",
+          "ood": false,
+          "q": "想给同事带 4 杯不重样的饮品,有什么搭配建议?"
+        },
+        {
+          "seconds": 2.408,
+          "prompt_tokens": 32,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 20,
+          "intent": "customize",
+          "ood": false,
+          "q": "请问芝士奶盖四季春可以做热的吗?"
+        },
+        {
+          "seconds": 2.238,
+          "prompt_tokens": 29,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 61,
+          "intent": "hours",
+          "ood": false,
+          "q": "外卖的结束时间和门店关门时间一样吗?"
+        },
+        {
+          "seconds": 2.36,
+          "prompt_tokens": 25,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 89,
+          "intent": "ood",
+          "ood": true,
+          "q": "请问附近哪里可以租房?"
+        }
+      ]
+    },
+    "sft": {
+      "adapter": "models\\sft",
+      "load_seconds": 1.44,
+      "num_questions": 5,
+      "total_generation_seconds": 23.19,
+      "seconds_per_question": 4.639,
+      "tokens_generated": 160,
+      "tokens_per_second": 6.9,
+      "mean_new_tokens": 32,
+      "max_new_tokens_observed": 32,
+      "eos_hit_rate": 0.0,
+      "gpu_mem_mb": {
+        "allocated": 654.7,
+        "reserved": 712.0,
+        "max_allocated": 688.3
+      },
+      "samples": [
+        {
+          "seconds": 4.51,
+          "prompt_tokens": 37,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 149,
+          "intent": "price",
+          "ood": false,
+          "q": "一杯芝士奶盖四季春加上 3 元配送费,一共多少钱?"
+        },
+        {
+          "seconds": 4.597,
+          "prompt_tokens": 36,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 161,
+          "intent": "recommend",
+          "ood": false,
+          "q": "想给同事带 4 杯不重样的饮品,有什么搭配建议?"
+        },
+        {
+          "seconds": 4.486,
+          "prompt_tokens": 32,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 20,
+          "intent": "customize",
+          "ood": false,
+          "q": "请问芝士奶盖四季春可以做热的吗?"
+        },
+        {
+          "seconds": 4.817,
+          "prompt_tokens": 29,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 61,
+          "intent": "hours",
+          "ood": false,
+          "q": "外卖的结束时间和门店关门时间一样吗?"
+        },
+        {
+          "seconds": 4.783,
+          "prompt_tokens": 25,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 89,
+          "intent": "ood",
+          "ood": true,
+          "q": "请问附近哪里可以租房?"
+        }
+      ]
+    },
+    "dpo": {
+      "adapter": "models\\dpo",
+      "load_seconds": 1.5,
+      "num_questions": 5,
+      "total_generation_seconds": 23.43,
+      "seconds_per_question": 4.687,
+      "tokens_generated": 160,
+      "tokens_per_second": 6.83,
+      "mean_new_tokens": 32,
+      "max_new_tokens_observed": 32,
+      "eos_hit_rate": 0.0,
+      "gpu_mem_mb": {
+        "allocated": 831.2,
+        "reserved": 900.0,
+        "max_allocated": 864.8
+      },
+      "samples": [
+        {
+          "seconds": 4.586,
+          "prompt_tokens": 37,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 149,
+          "intent": "price",
+          "ood": false,
+          "q": "一杯芝士奶盖四季春加上 3 元配送费,一共多少钱?"
+        },
+        {
+          "seconds": 4.674,
+          "prompt_tokens": 36,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 161,
+          "intent": "recommend",
+          "ood": false,
+          "q": "想给同事带 4 杯不重样的饮品,有什么搭配建议?"
+        },
+        {
+          "seconds": 4.806,
+          "prompt_tokens": 32,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 20,
+          "intent": "customize",
+          "ood": false,
+          "q": "请问芝士奶盖四季春可以做热的吗?"
+        },
+        {
+          "seconds": 4.829,
+          "prompt_tokens": 29,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 61,
+          "intent": "hours",
+          "ood": false,
+          "q": "外卖的结束时间和门店关门时间一样吗?"
+        },
+        {
+          "seconds": 4.538,
+          "prompt_tokens": 25,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 89,
+          "intent": "ood",
+          "ood": true,
+          "q": "请问附近哪里可以租房?"
+        }
+      ]
+    },
+    "rl": {
+      "adapter": "models\\rl",
+      "load_seconds": 1.68,
+      "num_questions": 5,
+      "total_generation_seconds": 23.03,
+      "seconds_per_question": 4.606,
+      "tokens_generated": 160,
+      "tokens_per_second": 6.95,
+      "mean_new_tokens": 32,
+      "max_new_tokens_observed": 32,
+      "eos_hit_rate": 0.0,
+      "gpu_mem_mb": {
+        "allocated": 478.2,
+        "reserved": 846.0,
+        "max_allocated": 537.9
+      },
+      "samples": [
+        {
+          "seconds": 4.565,
+          "prompt_tokens": 37,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 149,
+          "intent": "price",
+          "ood": false,
+          "q": "一杯芝士奶盖四季春加上 3 元配送费,一共多少钱?"
+        },
+        {
+          "seconds": 4.776,
+          "prompt_tokens": 36,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 161,
+          "intent": "recommend",
+          "ood": false,
+          "q": "想给同事带 4 杯不重样的饮品,有什么搭配建议?"
+        },
+        {
+          "seconds": 4.467,
+          "prompt_tokens": 32,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 20,
+          "intent": "customize",
+          "ood": false,
+          "q": "请问芝士奶盖四季春可以做热的吗?"
+        },
+        {
+          "seconds": 4.665,
+          "prompt_tokens": 29,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 61,
+          "intent": "hours",
+          "ood": false,
+          "q": "外卖的结束时间和门店关门时间一样吗?"
+        },
+        {
+          "seconds": 4.555,
+          "prompt_tokens": 25,
+          "new_tokens": 32,
+          "hit_eos": false,
+          "index": 89,
+          "intent": "ood",
+          "ood": true,
+          "q": "请问附近哪里可以租房?"
+        }
+      ]
+    }
+  },
+  "token_sweep_sft": [
+    {
+      "max_new_tokens": 8,
+      "seconds": 1.063,
+      "new_tokens": 8
+    },
+    {
+      "max_new_tokens": 32,
+      "seconds": 4.516,
+      "new_tokens": 32
+    },
+    {
+      "max_new_tokens": 64,
+      "seconds": 8.802,
+      "new_tokens": 64
+    }
+  ]
+}

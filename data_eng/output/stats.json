@@ -1,8 +1,8 @@
 {
   "raw_count": 2887,
-  "dedup_dropped": 1551,
-  "final_count": 1336,
-  "expansion_ratio": 24.3,
+  "dedup_dropped": 40,
+  "final_count": 2847,
+  "expansion_ratio": 51.8,
   "source": {
     "seed": 55,
     "price_template": 64,
@@ -15,8 +15,8 @@
     "onpolicy": 1521
   },
   "intent_dist": {
-    "price": 404,
-    "recommend": 504,
+    "price": 1610,
+    "recommend": 809,
     "customize": 134,
     "hours": 29,
     "delivery": 29,
@@ -27,9 +27,9 @@
     "ood": 126
   },
   "split": {
-    "train": 1066,
-    "val": 132,
-    "test": 138
+    "train": 2275,
+    "val": 284,
+    "test": 288
   },
-  "ood_ratio": 0.094
+  "ood_ratio": 0.044
 }

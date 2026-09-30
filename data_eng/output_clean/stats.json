@@ -1,0 +1,465 @@
+{
+  "dataset": "output_clean",
+  "out_dir": "D:/LLM-Project/data_eng/output_clean",
+  "split_seed": 42,
+  "raw_count": 2965,
+  "dedup_dropped": 41,
+  "final_count": 2924,
+  "expanded_from_seeds": 53.16,
+  "source_distribution": {
+    "train": {
+      "onpolicy": 1480,
+      "paraphrase": 888,
+      "template": 176,
+      "evolved": 86,
+      "seed": 46
+    },
+    "val": {
+      "paraphrase": 52,
+      "template": 12,
+      "seed": 1
+    },
+    "test": {
+      "paraphrase": 84,
+      "gold_eval": 78,
+      "template": 13,
+      "seed": 8
+    }
+  },
+  "intent_distribution": {
+    "train": {
+      "price": 1609,
+      "recommend": 809,
+      "customize": 74,
+      "ood": 41,
+      "after_sale": 24,
+      "allergen": 24,
+      "delivery": 24,
+      "hours": 24,
+      "member": 24,
+      "store": 23
+    },
+    "val": {
+      "ood": 35,
+      "customize": 30
+    },
+    "test": {
+      "ood": 60,
+      "customize": 30,
+      "member": 15,
+      "hours": 13,
+      "price": 12,
+      "recommend": 12,
+      "delivery": 11,
+      "after_sale": 10,
+      "allergen": 10,
+      "store": 10
+    }
+  },
+  "split": {
+    "train": 2676,
+    "val": 65,
+    "test": 183
+  },
+  "families": {
+    "train": 303,
+    "val": 13,
+    "test": 99
+  },
+  "groups": {
+    "train": 40,
+    "val": 9,
+    "test": 95
+  },
+  "ood": {
+    "samples": {
+      "train": 41,
+      "val": 35,
+      "test": 60
+    },
+    "families": {
+      "train": 13,
+      "val": 7,
+      "test": 20
+    }
+  },
+  "ood_ratio": 0.0465,
+  "test_purity": {
+    "model_generated_sources": {
+      "evolved": 0,
+      "onpolicy": 0
+    },
+    "test_onpolicy": 0,
+    "test_evolved": 0
+  },
+  "gold_eval": {
+    "count": 78,
+    "by_intent": {
+      "after_sale": 10,
+      "allergen": 10,
+      "delivery": 6,
+      "hours": 8,
+      "member": 5,
+      "ood": 10,
+      "price": 12,
+      "recommend": 12,
+      "store": 5
+    },
+    "test_gold_eval_count": 78,
+    "test_gold_eval_by_intent": {
+      "after_sale": 10,
+      "allergen": 10,
+      "delivery": 6,
+      "hours": 8,
+      "member": 5,
+      "ood": 10,
+      "price": 12,
+      "recommend": 12,
+      "store": 5
+    },
+    "overlap_with_train_val_old_test": {
+      "train": {
+        "exact": 0,
+        "base": 0,
+        "family": 0
+      },
+      "val": {
+        "exact": 0,
+        "base": 0,
+        "family": 0
+      },
+      "old_test": {
+        "exact": 0,
+        "base": 0,
+        "family": 0
+      },
+      "ood_family": {
+        "train": 0,
+        "val": 0,
+        "old_test": 0
+      }
+    },
+    "test_intent_counts": {
+      "after_sale": 10,
+      "allergen": 10,
+      "customize": 30,
+      "delivery": 11,
+      "hours": 13,
+      "member": 15,
+      "ood": 60,
+      "price": 12,
+      "recommend": 12,
+      "store": 10
+    },
+    "previous_test_preserved": {
+      "previous_test_rows": 183,
+      "missing": 0,
+      "content_changed": 0
+    },
+    "previous_test_sha256": "c665a541f693e3803982c3cc3ba5f2991ae8af4003fe8b80cc3ba6d727c0e91a",
+    "unsupported_scenarios": [
+      {
+        "intent": "price",
+        "scenario": "杯型/规格价格(中杯/大杯/升杯加价)",
+        "missing_fact": "kb.py PRODUCTS 只有单一价格,没有杯型/容量字段"
+      },
+      {
+        "intent": "price",
+        "scenario": "套餐价格、季节限定价格",
+        "missing_fact": "kb.py 没有套餐与季节限定商品"
+      },
+      {
+        "intent": "allergen",
+        "scenario": "坚果/花生/芝麻过敏原,小料的过敏原",
+        "missing_fact": "kb.py ALLERGENS 只覆盖 4 款产品的 4 类提示,没有小料与其他过敏原"
+      },
+      {
+        "intent": "after_sale",
+        "scenario": "漏发/错发/少送、异物、超时未送达的处理规则",
+        "missing_fact": "kb.py 只有 REFUND_RULE 与 DELIVERY_REFUND 两条政策,未规定漏发与超时"
+      },
+      {
+        "intent": "member",
+        "scenario": "积分有效期、积分与优惠券叠加、生日福利",
+        "missing_fact": "kb.py MEMBER_RULE / COUPON_* 未涉及有效期与叠加规则"
+      },
+      {
+        "intent": "store",
+        "scenario": "加盟合作、WiFi 密码、座位/环境、门店地址清单",
+        "missing_fact": "kb.py STORE_NOTE 只有门店数量与小程序查店,没有上述信息"
+      },
+      {
+        "intent": "delivery",
+        "scenario": "超出 3 公里的处理、配送时长承诺、配送费退还",
+        "missing_fact": "kb.py 只定义 3 公里/3 元/满 25 元免,未定义超范围与时效承诺"
+      },
+      {
+        "intent": "customize",
+        "scenario": "常温/加冰量以外的规格定制(如加浓、换奶)",
+        "missing_fact": "kb.py 未定义糖度/冰量以外的定制选项"
+      }
+    ]
+  },
+  "unknown_lineage": {
+    "unknown_family_count": 7,
+    "ambiguous_lineage_count": 1,
+    "unknown_by_source": {
+      "onpolicy": 7
+    },
+    "ambiguous_by_source": {
+      "evolved": 1
+    }
+  },
+  "lineage_summary": {
+    "gold_samples": 1358,
+    "extra_samples": 1607,
+    "invalid_extra_rows_dropped": 0,
+    "dedup_and_length_dropped": 41,
+    "unique_samples": 2924,
+    "groups_total": 144,
+    "groups_clean": 26,
+    "groups_non_clean": 118,
+    "unknown_lineage_samples": 7,
+    "ambiguous_lineage_samples": 1,
+    "lineage_confidence": {
+      "gold": 1280,
+      "seed_match": 85,
+      "ambiguous_union": 1,
+      "exact_question": 1443,
+      "unknown": 7,
+      "entity_only": 30,
+      "gold_eval": 78
+    },
+    "gold_template_breakdown": {
+      "seed": 55,
+      "price_template": 64,
+      "recommend_template": 96,
+      "customize_template": 20,
+      "topping_template": 5,
+      "ood_template": 16,
+      "paraphrase_added": 1024
+    }
+  },
+  "missing_intents_per_split": {
+    "train": [],
+    "val": [
+      "after_sale",
+      "allergen",
+      "delivery",
+      "hours",
+      "member",
+      "price",
+      "recommend",
+      "store"
+    ],
+    "test": []
+  },
+  "leakage": {
+    "exact_question_overlap": {
+      "train-val": 0,
+      "train-test": 0,
+      "val-test": 0
+    },
+    "base_question_overlap": {
+      "train-val": 0,
+      "train-test": 0,
+      "val-test": 0
+    },
+    "family_overlap": {
+      "train-val": 0,
+      "train-test": 0,
+      "val-test": 0
+    },
+    "split_group_overlap": {
+      "train-val": 0,
+      "train-test": 0,
+      "val-test": 0
+    },
+    "row_level": {
+      "exact_question_rows": {
+        "train<-val": 0,
+        "train<-test": 0,
+        "val<-train": 0,
+        "val<-test": 0,
+        "test<-train": 0,
+        "test<-val": 0
+      },
+      "base_question_rows": {
+        "train<-val": 0,
+        "train<-test": 0,
+        "val<-train": 0,
+        "val<-test": 0,
+        "test<-train": 0,
+        "test<-val": 0
+      },
+      "family_rows": {
+        "train<-val": 0,
+        "train<-test": 0,
+        "val<-train": 0,
+        "val<-test": 0,
+        "test<-train": 0,
+        "test<-val": 0
+      }
+    },
+    "duplicate_within_split": {
+      "train": {
+        "duplicate_qa_pairs": 0,
+        "duplicate_questions": 1510
+      },
+      "val": {
+        "duplicate_qa_pairs": 0,
+        "duplicate_questions": 0
+      },
+      "test": {
+        "duplicate_qa_pairs": 0,
+        "duplicate_questions": 0
+      }
+    }
+  },
+  "assertions": [
+    {
+      "name": "exact normalized question never crosses split",
+      "passed": true,
+      "detail": "overlap={'train-val': 0, 'train-test': 0, 'val-test': 0}"
+    },
+    {
+      "name": "family never crosses split",
+      "passed": true,
+      "detail": "overlap={'train-val': 0, 'train-test': 0, 'val-test': 0}"
+    },
+    {
+      "name": "base question never crosses split",
+      "passed": true,
+      "detail": "overlap={'train-val': 0, 'train-test': 0, 'val-test': 0}"
+    },
+    {
+      "name": "split group never crosses split",
+      "passed": true,
+      "detail": "overlap={'train-val': 0, 'train-test': 0, 'val-test': 0}"
+    },
+    {
+      "name": "OOD family never crosses split",
+      "passed": true,
+      "detail": "overlap={'train-val': 0, 'train-test': 0, 'val-test': 0} (train=13, val=7, test=20)"
+    },
+    {
+      "name": "OOD entity/topic never crosses split",
+      "passed": true,
+      "detail": "overlap={'train-val': 0, 'train-test': 0, 'val-test': 0}"
+    },
+    {
+      "name": "test contains 0 model-generated samples (onpolicy/evolved)",
+      "passed": true,
+      "detail": "test model-generated = {'evolved': 0, 'onpolicy': 0}"
+    },
+    {
+      "name": "val contains 0 model-generated samples (onpolicy/evolved)",
+      "passed": true,
+      "detail": "val model-generated = {'evolved': 0, 'onpolicy': 0}"
+    },
+    {
+      "name": "all samples carry complete lineage metadata",
+      "passed": true,
+      "detail": "no missing fields"
+    },
+    {
+      "name": "train/val/test all non-empty",
+      "passed": true,
+      "detail": "sizes={'train': 2676, 'val': 65, 'test': 183}"
+    },
+    {
+      "name": "no unknown-lineage sample in val/test",
+      "passed": true,
+      "detail": "unknown_lineage_samples_total=7"
+    },
+    {
+      "name": "gold_eval samples all present and flagged eval_only",
+      "passed": true,
+      "detail": "expected=78 actual=78"
+    },
+    {
+      "name": "gold_eval only in test (train/val gold_eval = 0)",
+      "passed": true,
+      "detail": "test=78 train=0 val=0"
+    },
+    {
+      "name": "gold_eval zero exact/base/family overlap with train/val/old_test",
+      "passed": true,
+      "detail": "{'train': {'exact': 0, 'base': 0, 'family': 0}, 'val': {'exact': 0, 'base': 0, 'family': 0}, 'old_test': {'exact': 0, 'base': 0, 'family': 0}}"
+    },
+    {
+      "name": "gold_eval OOD families disjoint from train/val/old_test OOD families",
+      "passed": true,
+      "detail": "{'train': 0, 'val': 0, 'old_test': 0}"
+    },
+    {
+      "name": "test covers every intent present in the dataset",
+      "passed": true,
+      "detail": "test_intents=['after_sale', 'allergen', 'customize', 'delivery', 'hours', 'member', 'ood', 'price', 'recommend', 'store'] missing=[]"
+    },
+    {
+      "name": "test has >=10 questions for price/recommend/after_sale/allergen",
+      "passed": true,
+      "detail": {
+        "price": 12,
+        "recommend": 12,
+        "after_sale": 10,
+        "allergen": 10
+      }
+    },
+    {
+      "name": "previous clean test rows preserved verbatim",
+      "passed": true,
+      "detail": "{'previous_test_rows': 183, 'missing': 0, 'content_changed': 0}"
+    }
+  ],
+  "all_assertions_passed": true,
+  "legacy_baseline": {
+    "path": "data_eng/output",
+    "sizes": {
+      "train": 2275,
+      "val": 284,
+      "test": 288
+    },
+    "exact_question_overlap": {
+      "train-val": 168,
+      "train-test": 154,
+      "val-test": 59
+    },
+    "base_question_overlap": {
+      "train-val": 164,
+      "train-test": 164,
+      "val-test": 111
+    },
+    "test_rows_with_exact_q_in_train": 188,
+    "test_rows_with_base_q_in_train": 277,
+    "ood_base_question_overlap": {
+      "train-test": 13
+    },
+    "test_ood_total": 13,
+    "test_source_distribution": {
+      "<none>": 131,
+      "onpolicy": 146,
+      "evolved": 11
+    }
+  },
+  "inputs": {
+    "seeds.py": "sha256:45b7d6e92630312c",
+    "kb.py": "sha256:35e876254b785b17",
+    "generator": "build_dataset.py sha256:92fcb99eaffafa67",
+    "extra_files": {
+      "data_eng/output/evolved.jsonl": {
+        "valid_rows": 86,
+        "invalid_dropped": 0
+      },
+      "data_eng/output/onpolicy.jsonl": {
+        "valid_rows": 1521,
+        "invalid_dropped": 0
+      }
+    },
+    "split_seed": "42",
+    "build_command": "python data_eng/build_dataset.py --extra-file data_eng\\output\\evolved.jsonl --extra-file data_eng\\output\\onpolicy.jsonl",
+    "extra_file:data_eng/output/evolved.jsonl": "sha256:9e94e432111997bd",
+    "extra_file:data_eng/output/onpolicy.jsonl": "sha256:dde6689fc08befeb"
+  }
+}

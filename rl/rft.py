@@ -86,6 +86,16 @@ def main():
                         "keywords": r["keywords"],
                         "ood": r["ood"],
                         "source": "onpolicy",
+                        # ---- 样本血缘:继承采样来源行的元数据(data_eng/output_clean 自带) ----
+                        "seed_id": r.get("seed_id"),
+                        "family_id": r.get("family_id"),
+                        "split_group_id": r.get("split_group_id"),
+                        "entity_key": r.get("entity_key"),
+                        "base_question": r.get("base_question"),
+                        "parent_q": r.get("q"),
+                        "parent_sample_id": r.get("sample_id"),
+                        "variant_type": "onpolicy",
+                        "lineage_confidence": "self_reported" if r.get("family_id") else "unknown",
                     }
                 )
         if (i + 1) % 50 == 0:

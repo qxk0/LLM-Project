@@ -23,7 +23,11 @@ import httpx
 
 from build_dataset import normalize
 from kb import PRODUCTS
+from leakage_audit import family_id_of
 from seeds import SEEDS
+
+# seed_id 与 build_dataset.py 一致(按 seeds.py 中的顺序编号),保证蒸馏数据的血缘可追溯
+SEED_IDS = {id(s): f"seed_{i:03d}" for i, s in enumerate(SEEDS, 1)}
 
 BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
 DEFAULT_MODEL = "glm-4-flash"  # 便宜快;可选 glm-4-air / glm-4-plus
@@ -149,6 +153,7 @@ def main():
             q = str(item.get("question", "")).strip()
             a = str(item.get("answer", "")).strip()
             if quality_pass(q, a, seed):
+                seed_id = SEED_IDS.get(id(seed))
                 rows.append(
                     {
                         "intent": seed["intent"],
@@ -157,6 +162,13 @@ def main():
                         "keywords": seed["keywords"],
                         "ood": seed["ood"],
                         "source": "evolved",
+                        # ---- 样本血缘:让蒸馏数据能追溯到父 seed ----
+                        "seed_id": seed_id,
+                        "family_id": family_id_of(seed["intent"], seed["q"]),
+                        "base_question": seed["q"],
+                        "parent_q": seed["q"],
+                        "variant_type": "evolved",
+                        "lineage_confidence": "self_reported",
                     }
                 )
         time.sleep(0.5)
