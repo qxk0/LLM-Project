@@ -876,11 +876,11 @@ def split_groups(
         )
 
     clean_total = sum(m["size"] for m in group_meta.values() if m["clean"])
-    caps = {
-        "train": max(total - clean_total, 1),  # train 吸收全部 non-clean group
-        "test": max(clean_total * clean_test_ratio, 1),
-        "val": max(clean_total * (1 - clean_test_ratio), 1),
-    }
+    # 目标容量按比例计算。修复点:旧实现把 train 容量写死为"非 clean group 总量",
+    # 当数据集里一条模型生成数据都没有(纯 gold 数据集)时会算出 train=0;
+    # 现在 clean group 三个 split 都可进,非 clean group 仍然只能进 train,
+    # 依靠"已填比例"贪心让 val/test 优先拿 clean 数据。
+    caps = {s: max(SPLIT_TARGETS[s] * total, 1) for s in ("train", "val", "test")}
 
     def fill_ratio(split, extra=0):
         """已填比例(含本 group):让 val/test 按 clean_test_ratio 同步增长。"""
@@ -906,7 +906,7 @@ def split_groups(
         for gid in gids:
             if gid in assign:
                 continue
-            allowed = ["val", "test"] if group_meta[gid]["clean"] else ["train"]
+            allowed = ["train", "val", "test"] if group_meta[gid]["clean"] else ["train"]
             best = min(
                 allowed,
                 key=lambda s: (

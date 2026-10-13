@@ -498,7 +498,10 @@ def main():
     examples_by_model = {}
     for name, adapter in configs:
         model = build_model(args.model_name, adapter)
-        pred_path = os.path.join(args.predictions_dir, f"{name}.jsonl")
+        # ⚠️ 文件名带上 prompt_format:base 在 chat/raw 两种口径下都会评,
+        # 若都用 "<name>.jsonl" 后跑的会覆盖先跑的,导致离线统计/Judge 拿到错格式的预测。
+        # 只改落盘文件名,不改任何判定逻辑(report 里的 model 名仍是 name)。
+        pred_path = os.path.join(args.predictions_dir, f"{name}_{args.prompt_format}.jsonl")
         metrics, details, _ = evaluate(
             model,
             tokenizer,

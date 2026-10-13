@@ -183,9 +183,12 @@ def main():
     with open(os.path.join(args.out_dir, "summary.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
 
-    lines = ["# LLM-as-Judge 评测结果(clean 183 test,复用项目原有 judge prompt)", ""]
+    # ⚠️ 修复点:原实现把"183 条"硬编码进标题,换评测集后会写出与事实不符的样本量。
+    # 改为从实际预测文件读取条数,标题不再绑定某个历史数据集。
+    n_rows = len(load_jsonl(pred_files[0])) if pred_files else 0
+    lines = [f"# LLM-as-Judge 评测结果(每模型 {n_rows} 条,复用项目原有 judge prompt)", ""]
     lines.append(f"- Judge model:`{args.judge_model}`(与 `sft/eval_domain.py --judge-model` 默认一致)")
-    lines.append("- 数据来源:`data_eng/output_clean/predictions/*.jsonl`(**直接复用已有回答,未重新推理**)")
+    lines.append(f"- 数据来源:`{args.predictions_dir}/*.jsonl`(**直接复用已有回答,未重新推理**)")
     lines.append("- 评分标准(沿用原实现):知识库内问题 4-5 分=含关键事实、3 分=部分正确、1-2 分=错误/编造;"
                  "知识库外问题 5 分=正确拒答、1 分=硬答/编造")
     lines.append("")

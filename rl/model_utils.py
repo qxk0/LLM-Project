@@ -1,4 +1,9 @@
-"""公共加载工具:本地缓存优先,避免每次联网超时。"""
+"""公共加载工具:本地缓存优先,避免每次联网超时。
+
+⚠️ 现状说明(2026-10-12 审计):本模块目前**没有被任何脚本 import**,
+属于预留的工具函数(各训练脚本各自保留了自己的加载逻辑)。
+保留原因:统一加载入口的候选实现;如需启用,请改各脚本为 `from model_utils import ...`。
+"""
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 

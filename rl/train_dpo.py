@@ -14,6 +14,9 @@ DPO 不需要奖励模型和 RL 采样,直接用"偏好对"做二分类式训练
 import argparse
 import json
 import os
+import random
+import time
+from collections import Counter
 
 import torch
 from datasets import Dataset
@@ -31,6 +34,11 @@ def parse_args():
     parser.add_argument("--data-file", type=str, default="data_eng/output/train.jsonl")
     parser.add_argument("--max-pairs", type=int, default=400, help="最多构造多少偏好对")
     parser.add_argument("--num-samples", type=int, default=4, help="每题采样几个回答")
+    parser.add_argument("--pairs-batch-size", type=int, default=8,
+                        help="构造偏好对时的批量采样 batch(只影响吞吐,不影响采样参数)")
+    parser.add_argument("--pairs-out", type=str, default=None,
+                        help="把偏好对与每题打分落盘成 JSONL(便于复现与审计)")
+    parser.add_argument("--seed", type=int, default=42, help="分层抽样与训练的随机种子")
     parser.add_argument("--max-steps", type=int, default=200)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--grad-accum", type=int, default=8)
@@ -51,6 +59,86 @@ def load_rows(path, limit):
     return rows
 
 
+def load_rows_stratified(path, limit, seed=42):
+    """按 intent 分层抽样,保证每个意图(尤其 OOD 拒答)都有覆盖。
+
+    ⚠️ 修复点:旧实现 load_rows() 只取文件"前 N 行",而训练数据是按 intent 分块排布的,
+    导致 RFT / DPO 实际只看到 price(recommend 后来才出现)、**完全看不到 OOD 拒答样本**,
+    因此偏好对/RFT 数据无法覆盖"该拒答"这一核心场景。
+    """
+    all_rows = []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                all_rows.append(json.loads(line))
+    if limit >= len(all_rows):
+        return all_rows
+    by_intent = {}
+    for r in all_rows:
+        by_intent.setdefault(r.get("intent", "unknown"), []).append(r)
+    rng = random.Random(seed)
+    quotas = {i: max(1, int(limit * len(v) / len(all_rows))) for i, v in by_intent.items()}
+    while sum(quotas.values()) > limit:
+        i = max(quotas, key=lambda x: (quotas[x], x))
+        if quotas[i] <= 1:
+            break
+        quotas[i] -= 1
+    out, used = [], {}
+    for i, v in by_intent.items():
+        rng.shuffle(v)
+        take = min(quotas[i], len(v))
+        out.extend(v[:take])
+        used[i] = take
+    remainder = limit - len(out)
+    if remainder > 0:
+        pool = [r for i, v in by_intent.items() for r in v[used[i]:]]
+        rng.shuffle(pool)
+        out.extend(pool[:remainder])
+    rng.shuffle(out)
+    return out[:limit]
+
+
+def sample_completions_batched(model, tokenizer, prompts, num_samples, batch_size=8,
+                               max_new_tokens=64, temperature=0.8, top_p=0.95,
+                               progress_every=50, tag="sample"):
+    """左 padding 批量采样:每个 prompt 采样 num_samples 条。
+
+    只改变吞吐(批量),**采样参数与旧实现完全一致**(temperature=0.8 / top_p=0.95 /
+    num_return_sequences=num_samples / max_new_tokens=64)。
+    """
+    old_side = getattr(tokenizer, "padding_side", "right")
+    tokenizer.padding_side = "left"
+    all_completions = []
+    t0 = time.time()
+    try:
+        for start in range(0, len(prompts), batch_size):
+            chunk = prompts[start:start + batch_size]
+            enc = tokenizer(chunk, return_tensors="pt", padding=True).to(model.device)
+            with torch.no_grad():
+                out = model.generate(
+                    **enc,
+                    max_new_tokens=max_new_tokens,
+                    do_sample=True,
+                    temperature=temperature,
+                    top_p=top_p,
+                    num_return_sequences=num_samples,
+                    pad_token_id=tokenizer.eos_token_id,
+                )
+            gen = out[:, enc.input_ids.shape[1]:]
+            texts = tokenizer.batch_decode(gen, skip_special_tokens=True)
+            for i in range(len(chunk)):
+                all_completions.append(
+                    [t.strip() for t in texts[i * num_samples:(i + 1) * num_samples]]
+                )
+            done = min(start + batch_size, len(prompts))
+            if progress_every and done % progress_every == 0:
+                print(f"  [{tag}] {done}/{len(prompts)} | {time.time() - t0:.0f}s", flush=True)
+    finally:
+        tokenizer.padding_side = old_side
+    return all_completions
+
+
 def score_response(comp, keywords, is_ood):
     """与 GRPO 相同的规则奖励:答对/拒答 +1,否则 -1;简洁 +0.1。"""
     score = 0.0
@@ -62,48 +150,64 @@ def score_response(comp, keywords, is_ood):
     return score
 
 
-def build_preference_pairs(model, tokenizer, rows, num_samples):
-    """采样 + 规则奖励打分 -> chosen/rejected 偏好对。"""
-    pairs = []
-    skipped = 0
-    for i, r in enumerate(rows):
-        prompt = r["q"]
-        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-        with torch.no_grad():
-            out = model.generate(
-                **inputs,
-                max_new_tokens=64,
-                do_sample=True,
-                temperature=0.8,
-                top_p=0.95,
-                num_return_sequences=num_samples,
-                pad_token_id=tokenizer.eos_token_id,
-            )
-        completions = [
-            tokenizer.decode(o[inputs.input_ids.shape[1] :], skip_special_tokens=True).strip()
-            for o in out
-        ]
-        # chosen 用知识库金标准答案(保证优选侧正确);rejected 用采样出的最差回答
+def build_preference_pairs(model, tokenizer, rows, num_samples, batch_size=8):
+    """采样 + 规则奖励打分 -> chosen/rejected 偏好对。
+
+    筛选逻辑与旧实现完全一致(chosen=知识库 gold;rejected=采样中规则分最低者;
+    仅当 worst_score < gold_score 时保留),只把"逐题串行采样"改为批量采样,
+    并额外记录每题的采样打分,便于事后审计。
+    """
+    completions_per_prompt = sample_completions_batched(
+        model, tokenizer, [r["q"] for r in rows], num_samples,
+        batch_size=batch_size, tag="dpo-pairs",
+    )
+    pairs, records, skipped = [], [], 0
+    for r, completions in zip(rows, completions_per_prompt):
         gold_score = score_response(r["a"], r["keywords"], r["ood"])
-        worst_score, rejected = min(
-            (score_response(c, r["keywords"], r["ood"]), c) for c in completions
+        scored = [(score_response(c, r["keywords"], r["ood"]), c) for c in completions]
+        worst_score, rejected = min(scored)
+        kept = worst_score < gold_score
+        records.append(
+            {
+                "prompt": r["q"],
+                "gold_answer": r["a"],
+                "intent": r.get("intent"),
+                "ood": bool(r.get("ood")),
+                "keywords": r.get("keywords", []),
+                "gold_score": gold_score,
+                "worst_score": worst_score,
+                "sampled_scores": [s for s, _ in scored],
+                "rejected": rejected,
+                "kept": kept,
+            }
         )
-        if worst_score < gold_score:  # 采样回答确实比金标准差才保留
-            pairs.append({"prompt": prompt, "chosen": r["a"], "rejected": rejected})
+        if kept:
+            pairs.append({"prompt": r["q"], "chosen": r["a"], "rejected": rejected})
         else:
             skipped += 1
-        if (i + 1) % 50 == 0:
-            print(f"  已构造 {len(pairs)} 对 (跳过 {skipped})...")
-    print(f"偏好对总数:{len(pairs)} | 因分数相同跳过:{skipped}")
-    return Dataset.from_list(pairs)
+    stats = {
+        "rows": len(rows),
+        "num_samples": num_samples,
+        "pairs": len(pairs),
+        "skipped": skipped,
+        "intent_distribution": dict(Counter(r.get("intent") for r in rows)),
+        "ood_rows": sum(1 for r in rows if r.get("ood")),
+    }
+    print(
+        f"偏好对总数:{len(pairs)} | 因分数相同跳过:{skipped} | "
+        f"覆盖意图:{list(stats['intent_distribution'])} | OOD 题数:{stats['ood_rows']}"
+    )
+    return pairs, records, stats
 
 
 def main():
     args = parse_args()
     os.makedirs(args.output_dir, exist_ok=True)
 
-    rows = load_rows(args.data_file, args.max_pairs)
-    print(f"加载 {len(rows)} 条领域数据")
+    torch.manual_seed(args.seed)
+    random.seed(args.seed)
+    rows = load_rows_stratified(args.data_file, args.max_pairs, seed=args.seed)
+    print(f"加载 {len(rows)} 条领域数据(按 intent 分层抽样,保证 OOD 覆盖)")
 
     try:
         tokenizer = AutoTokenizer.from_pretrained(
@@ -127,8 +231,19 @@ def main():
     model = PeftModel.from_pretrained(model, args.adapter)
     model.eval()
 
-    print(f"构造偏好对:每题采样 {args.num_samples} 个回答,用规则奖励打分...")
-    dataset = build_preference_pairs(model, tokenizer, rows, args.num_samples)
+    print(f"构造偏好对:每题采样 {args.num_samples} 个回答(批量采样),用规则奖励打分...")
+    pairs, pair_records, pair_stats = build_preference_pairs(
+        model, tokenizer, rows, args.num_samples, batch_size=args.pairs_batch_size
+    )
+    dataset = Dataset.from_list(pairs)
+    if args.pairs_out:
+        os.makedirs(os.path.dirname(os.path.abspath(args.pairs_out)), exist_ok=True)
+        with open(args.pairs_out, "w", encoding="utf-8") as f:
+            for rec in pair_records:
+                f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        with open(os.path.splitext(args.pairs_out)[0] + "_stats.json", "w", encoding="utf-8") as f:
+            json.dump(pair_stats, f, ensure_ascii=False, indent=2)
+        print(f"偏好对已落盘:{args.pairs_out}({len(pair_records)} 条逐题记录)")
 
     # ---------- DPO 训练 ----------
     dpo_args = DPOConfig(

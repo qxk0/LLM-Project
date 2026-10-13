@@ -18,7 +18,7 @@ from datasets import Dataset
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-from train_dpo import load_rows, score_response
+from train_dpo import load_rows_stratified, sample_completions_batched, score_response
 
 
 def parse_args():
@@ -30,14 +30,23 @@ def parse_args():
     parser.add_argument("--num-samples", type=int, default=4)
     parser.add_argument("--min-score", type=float, default=1.0,
                         help="验证器通过阈值:1.0=答对/正确拒答")
+    parser.add_argument("--batch-size", type=int, default=8,
+                        help="批量采样 batch(只影响吞吐,采样参数不变)")
+    parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--out", type=str, default="data_eng/output/onpolicy.jsonl")
+    parser.add_argument("--rejected-out", type=str, default=None,
+                        help="把未通过验证器的采样也落盘(含 reward),便于审计通过率")
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
-    rows = load_rows(args.data_file, args.max_rows)
-    print(f"加载 {len(rows)} 条领域数据")
+    torch.manual_seed(args.seed)
+    rows = load_rows_stratified(args.data_file, args.max_rows, seed=args.seed)
+    from collections import Counter as _Counter
+    print(f"加载 {len(rows)} 条领域数据(按 intent 分层抽样)"
+          f" | 意图覆盖 {dict(_Counter(r['intent'] for r in rows))}"
+          f" | OOD {sum(1 for r in rows if r['ood'])} 条")
 
     try:
         tokenizer = AutoTokenizer.from_pretrained(
@@ -61,23 +70,18 @@ def main():
     model = PeftModel.from_pretrained(model, args.adapter)
     model.eval()
 
-    passed, total = [], 0
-    for i, r in enumerate(rows):
-        inputs = tokenizer(r["q"], return_tensors="pt").to(model.device)
-        with torch.no_grad():
-            out = model.generate(
-                **inputs,
-                max_new_tokens=64,
-                do_sample=True,
-                temperature=0.8,
-                top_p=0.95,
-                num_return_sequences=args.num_samples,
-                pad_token_id=tokenizer.eos_token_id,
-            )
-        for o in out:
-            resp = tokenizer.decode(o[inputs.input_ids.shape[1] :], skip_special_tokens=True).strip()
+    completions_per_prompt = sample_completions_batched(
+        model, tokenizer, [r["q"] for r in rows], args.num_samples,
+        batch_size=args.batch_size, tag="rft",
+    )
+    passed, rejected, total = [], [], 0
+    # ⚠️ 修复点:旧实现进度打印用 `i`(未定义,循环变量是 `r`),第一条样本就 NameError;
+    # 改为 enumerate 并对齐 train_dpo 的进度打印节奏。
+    for i, (r, completions) in enumerate(zip(rows, completions_per_prompt)):
+        for resp in completions:
             total += 1
-            if score_response(resp, r["keywords"], r["ood"]) >= args.min_score:
+            sc = score_response(resp, r["keywords"], r["ood"])
+            if sc >= args.min_score:
                 passed.append(
                     {
                         "intent": r["intent"],
@@ -98,6 +102,16 @@ def main():
                         "lineage_confidence": "self_reported" if r.get("family_id") else "unknown",
                     }
                 )
+            else:
+                rejected.append({
+                    "intent": r["intent"],
+                    "q": r["q"],
+                    "a": resp,
+                    "keywords": r["keywords"],
+                    "ood": r["ood"],
+                    "source": "onpolicy_rejected",
+                    "reward": sc,
+                })
         if (i + 1) % 50 == 0:
             print(f"  已处理 {i + 1}/{len(rows)},累计通过 {len(passed)}")
 
@@ -105,6 +119,25 @@ def main():
     with open(args.out, "w", encoding="utf-8") as f:
         for r in passed:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    if args.rejected_out:
+        os.makedirs(os.path.dirname(os.path.abspath(args.rejected_out)), exist_ok=True)
+        with open(args.rejected_out, "w", encoding="utf-8") as f:
+            for r in rejected:
+                f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    from collections import Counter as _C
+    stats = {
+        "rows": len(rows),
+        "num_samples": args.num_samples,
+        "total_samples": total,
+        "passed": len(passed),
+        "rejected": len(rejected),
+        "pass_rate": round(len(passed) / max(total, 1), 4),
+        "min_score": args.min_score,
+        "intent_distribution": dict(_C(r["intent"] for r in rows)),
+        "ood_rows": sum(1 for r in rows if r["ood"]),
+    }
+    with open(os.path.splitext(args.out)[0] + "_stats.json", "w", encoding="utf-8") as f:
+        json.dump(stats, f, ensure_ascii=False, indent=2)
     print(f"完成:共采样 {total} 条,验证器通过 {len(passed)} 条(通过率 {len(passed) / max(total, 1):.0%})")
     print("下一步:python data_eng/build_dataset.py --extra-file " + args.out)
 

@@ -15,6 +15,7 @@
 import argparse
 import json
 import os
+import random
 
 import torch
 from datasets import load_dataset
@@ -45,6 +46,7 @@ def parse_args():
     parser.add_argument("--max-seq-len", type=int, default=1024)
     parser.add_argument("--lora-r", type=int, default=16)
     parser.add_argument("--lora-alpha", type=int, default=32)
+    parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output-dir", type=str, default="models/sft")
     return parser.parse_args()
 
@@ -123,7 +125,34 @@ def main():
         print(f"正在加载本地数据 {args.data_file} ...")
         raw = load_dataset("json", data_files=args.data_file, split="train")
         n = min(args.max_examples, len(raw))
-        data = raw.select(range(n)).map(
+        # 分层抽样(修复):旧实现 raw.select(range(n)) 只取文件前 n 行,而数据是按 intent 分块排列的,
+        # 会导致 SFT 训练集里一条 OOD 拒答样本都没有 -> 拒答能力根本学不出来。
+        torch.manual_seed(args.seed)
+        idx_by_intent = {}
+        for _i, _ex in enumerate(raw):
+            idx_by_intent.setdefault(_ex.get("intent", "unknown"), []).append(_i)
+        rng = random.Random(args.seed)
+        quotas = {k: max(1, int(n * len(v) / len(raw))) for k, v in idx_by_intent.items()}
+        while sum(quotas.values()) > n:
+            k_max = max(quotas, key=lambda x: (quotas[x], x))
+            if quotas[k_max] <= 1:
+                break
+            quotas[k_max] -= 1
+        picked, used = [], {}
+        for k, v in idx_by_intent.items():
+            rng.shuffle(v)
+            take = min(quotas[k], len(v))
+            picked.extend(v[:take])
+            used[k] = take
+        if n - len(picked) > 0:
+            pool = [i for k, v in idx_by_intent.items() for i in v[used[k]:]]
+            rng.shuffle(pool)
+            picked.extend(pool[: n - len(picked)])
+        rng.shuffle(picked)
+        picked = sorted(picked)[:n]
+        print(f"      分层抽样 {len(picked)} 条 | intent 覆盖 {sorted(idx_by_intent)}"
+              f" | OOD 条数 {sum(1 for i in picked if raw[i].get('ood'))}")
+        data = raw.select(picked).map(
             lambda r: {
                 "messages": [
                     {"role": "user", "content": r["q"]},

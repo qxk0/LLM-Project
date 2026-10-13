@@ -215,7 +215,8 @@ def main():
 
     print(
         f"开始 GRPO 训练:{args.max_steps} 步,loss={training_args.loss_type}"
-        f"{'(序列级)' if args.seq_level else ''},截断掩码已开启"
+        f"{'(序列级)' if args.seq_level else ''}"
+        f",mask_truncated_completions={training_args.mask_truncated_completions}"
     )
     trainer.train()
 
