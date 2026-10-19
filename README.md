@@ -102,6 +102,18 @@ python sft/train_sft.py --data-file data_eng/output_clean/train.jsonl --max-step
 NF4 4bit 量化 + LoRA(r=16,覆盖全部线性层,可训练参数 8.8M / 502.8M = 1.75%),
 数据为 clean train(2533 条,按意图分层抽样 2000 条训练 600 步),产物保存到 models/sft。
 
+### Qwen3-0.6B 低显存 smoke test
+
+```powershell
+powershell -ExecutionPolicy Bypass -File sft/smoke_qwen3.ps1
+```
+
+脚本默认使用 `Qwen/Qwen3-0.6B`、clean train、32 条样本、10 步、seq_len=256、
+LoRA r=8、batch=1、grad_accum=4,并强制单卡运行(显存不足时直接 OOM,便于定位),
+产物保存到 `models/sft_qwen3_smoke`。Qwen3 默认关闭 thinking 模式;
+如需正式训练,把 `--smoke-test` 去掉,并按需设置 `--max-seq-len 512 --max-steps 600`。
+本机实测:10 步耗时 45.8s,峰值显存 1.31 GiB(保留 1.55 GiB),适配器可正常加载。
+
 ## 三、领域评测(指标结果)
 
 ```powershell
@@ -223,6 +235,69 @@ RL 的目标是让模型"会的就答对、不会的就拒答",而不是胡编 �
 (同期 `frac_reward_zero_std ≈ 0.71`、`clipped_ratio ≈ 1.0`、
 `mean_terminated_length ≈ 0`);(b)单一关键词指标不足以衡量对齐效果,必须与语义指标交叉验证。
 完整对照见 `runs/2026-10-13/gspo_ablation/GSPO_VS_DAPO.md`。
+
+### 多轮工具客服 RL(更深一层的扩展)
+
+在单轮 64-token DAPO 之外,新增了一个**多轮工具客服**的最小闭环:
+确定性环境 + `lookup_order` / `check_refund_policy` / `get_member_info` / `search_kb`
+四个工具 + 规则用户 simulator,支持 1/2/4/6/8 轮 episode。
+
+它同时实现了两种信用分配口径:
+
+- `terminal-only`:只使用终局 reward;
+- `turn-level`:每轮叠加工具正确性、追问正确性、轮数成本,并用 return-to-go 做组内优势归一化。
+
+train_all 覆盖 horizon 1/2/4/8,test 覆盖 2/4/6/8,因此可以单独报告 horizon 外推结果。
+详见 `rl/MULTITURN_RL.md`。
+
+60 条 test(每个 horizon 15 条)结果:
+
+| 模型 | 2 轮 | 4 轮 | 6 轮 | 8 轮 | 总体 |
+|---|---:|---:|---:|---:|---:|
+| SFT-100(只训 1/2/4) | 100% | 100% | 100% | 0% | 75% |
+| SFT-all-30(冷启动) | 100% | 100% | 0% | 0% | 50% |
+| terminal-only-10(从 SFT-all) | 100% | 100% | 0% | 100% | 75% |
+| turn-level-10 scaled(从 SFT-all) | 100% | 100% | 0% | 100% | 75% |
+
+结论是:RL 把训练过的 8 轮从 0% 提到 100%,但 6 轮因训练集没有对应 scenario
+仍是 0%;terminal-only 和 turn-level 最终成功率相同,turn-level 的优势主要是
+稀疏终局下的信号密度,不是无条件更高收益。
+完整结果与训练动态见 `runs/multiturn/RESULTS.md`。
+
+```powershell
+powershell -ExecutionPolicy Bypass -File sft/smoke_multiturn.ps1
+powershell -ExecutionPolicy Bypass -File rl/smoke_multiturn.ps1
+```
+
+### DPO / SimPO / GRPO 对比
+
+在同一 clean SFT、同一 clean train/test、同一 chat prompt 下完成了 100 步
+DPO / SimPO / 标准 GRPO 对照:
+
+| 模型 | 领域正确率 | 总正确率 | OOD 拒答 | gold_eval | 熟场景 |
+|---|---:|---:|---:|---:|---:|
+| SFT | 33.3% | 33.9% | 40.0% | 53.8% | 54.5% |
+| DPO | 36.6% | 36.9% | 40.0% | 50.0% | **64.9%** |
+| SimPO | **37.3%** | **38.1%** | **46.7%** | 47.4% | 63.6% |
+| GRPO | **37.3%** | 37.5% | 40.0% | **55.1%** | 62.3% |
+
+三种方法都把熟场景从 54.5% 提到 62–65%,但未见过场景仍在 8–12%,
+且 EOS 接近 0。差距只有 1–2 个点,单 seed 下不能声称显著性。
+完整说明见 `rl/ALIGNMENT.md`,逐条结果见 `runs/alignment_compare/`。
+
+### 交互测试客服
+
+```powershell
+# 单轮 SFT:直接输入自然语言问题
+.\.venv\Scripts\python.exe tools\chat_customer_service.py --mode single
+
+# 多轮工具 Agent:自动追问、调工具、给最终答复
+.\.venv\Scripts\python.exe tools\chat_customer_service.py --mode agent
+```
+
+输入 `:quit` 退出。单轮默认加载 `runs/2026-10-12/models/sft`;
+多轮默认加载 `models/multiturn_grpo_turn_h8_scaled`。
+如果 PowerShell 中文乱码,先执行 `chcp 65001`。
 
 ## 六、从零预训练研究
 

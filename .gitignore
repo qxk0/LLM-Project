@@ -10,6 +10,7 @@
 # 生成的数据与模型产物(体积大,不提交)
 data/
 models/
+runs/
 
 # Python
 __pycache__/
